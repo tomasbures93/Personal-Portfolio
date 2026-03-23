@@ -1,0 +1,12 @@
+name: portfolio
+
+services:
+  portfolio.api:
+    image: ${DOCKER_REGISTRY-}portfolioapi
+    container_name: portfolio-api
+    build:
+      context: ..
+      dockerfile: src/Portfolio.API/Dockerfile
+    ports: 
+      - "51000:8081"
+  
