@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Portfolio.Domain.Entities;
+using Portfolio.Domain.Enums;
 
 namespace Portfolio.API.Controllers;
 

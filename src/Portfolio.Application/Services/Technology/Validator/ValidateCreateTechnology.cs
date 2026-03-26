@@ -5,9 +5,9 @@ using Portfolio.Domain.Enums;
 
 namespace Portfolio.Application.Services.Technology.Validator;
 
-public class ValidateCreateTechnology : IValidate<TechnologyCreateRequestDto>
+public class ValidateCreateTechnology : IValidate<TechnologyRequestDto>
 {
-    public ValidationResult Validate(TechnologyCreateRequestDto model)
+    public ValidationResult Validate(TechnologyRequestDto model)
     {
         var result = new ValidationResult();
 

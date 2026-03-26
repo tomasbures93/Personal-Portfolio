@@ -4,7 +4,7 @@ using Portfolio.Domain.Entities;
 
 namespace Portfolio.Infrastructure.Persistence;
 
-public class TechnologyRepository : ITechnologyRepository
+public sealed class TechnologyRepository : ITechnologyRepository
 {
     private readonly AppDbContext _dbContext;
 
@@ -24,7 +24,6 @@ public class TechnologyRepository : ITechnologyRepository
     public async Task<bool> DeleteTechnologyAsync(int id, CancellationToken token)
     {
         var technology = await _dbContext.Technology.SingleOrDefaultAsync(x => x.Id == id, token);
-
         if (technology is null)
             return false;
 
@@ -47,7 +46,6 @@ public class TechnologyRepository : ITechnologyRepository
     public async Task<Technology?> UpdateTechnologyAsync(Technology technology, CancellationToken token)
     {
         var existingTechnology = await _dbContext.Technology.SingleOrDefaultAsync(t => t.Id == technology.Id, token);
-
         if (existingTechnology is null)
             return null;
 

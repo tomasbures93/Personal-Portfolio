@@ -2,4 +2,7 @@
 
 namespace Portfolio.Application.DTO.Response;
 
-public sealed record TechnologyResponseDto(int id, string name, TechnologyCategory category);
+public sealed record TechnologyResponseDto(
+    int id, 
+    string name, 
+    TechnologyCategory category);

@@ -11,8 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Blog\Validator\" />
-    <Folder Include="Services\Project\Validator\" />
     <Folder Include="Services\Website\Validator\" />
   </ItemGroup>
 

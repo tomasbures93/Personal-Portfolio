@@ -10,7 +10,7 @@ public interface ITechnologyService
 
     Task<Result<List<TechnologyResponseDto>>> GetTechnologiesAsync(CancellationToken token);
 
-    Task<Result<TechnologyResponseDto>> CreateTechnologyAsync(TechnologyCreateRequestDto technologyCreateRequestDto, CancellationToken token);
+    Task<Result<TechnologyResponseDto>> CreateTechnologyAsync(TechnologyRequestDto technologyCreateRequestDto, CancellationToken token);
 
     Task<Result<TechnologyResponseDto>> UpdateTechnologyAsync(TechnologyUpdateRequestDto technologyUpdateRequestDto, CancellationToken token);
 
