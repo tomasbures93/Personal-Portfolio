@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Exceptions;
 using Portfolio.Application.DependencyInjection;
+using Portfolio.Domain.Entities;
 using Portfolio.Infrastructure.DependencyInjection;
 using Portfolio.Infrastructure.Persistence;
 
@@ -28,8 +29,19 @@ await using (var scope = app.Services.CreateAsyncScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     // TODO: Change it to migration
-    await db.Database.EnsureDeletedAsync();
     await db.Database.EnsureCreatedAsync();
+
+    if (!db.WebsiteConfig.Any())
+    {
+        // FAKE DATA FOR TESTING!
+        var config = new WebsiteConfig();
+        config.ChangeUserName("TestUser");
+        config.ChangeEmail("email");
+        config.UpdatePassword("password");
+
+        await db.WebsiteConfig.AddAsync(config);
+        await db.SaveChangesAsync();
+    }
 }
 
 // Configure the HTTP request pipeline.

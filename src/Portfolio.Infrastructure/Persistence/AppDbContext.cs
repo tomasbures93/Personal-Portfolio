@@ -25,6 +25,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<WebsiteConfig>()
             .HasMany(t => t.Technologies)
             .WithOne(d => d.WebsiteConfig)
-            .HasForeignKey(z => z.WebsiteConfigId);
+            .HasForeignKey(z => z.WebsiteConfigId)
+            .IsRequired(false);
     }
 }

@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Portfolio.API.Extensions;
+using Portfolio.Application.Abstraction.Services;
+using Portfolio.Application.DTO.Request;
+using Portfolio.Application.DTO.Response;
 
 namespace Portfolio.API.Controllers;
 
@@ -7,15 +10,44 @@ namespace Portfolio.API.Controllers;
 [ApiController]
 public class WebsiteController : ControllerBase
 {
-    [HttpGet]
-    public async Task<ActionResult> Get()
+    private readonly IWebsiteService _websiteService;
+
+    public WebsiteController(IWebsiteService websiteService)
     {
-        return Ok("Website Info");
+        _websiteService = websiteService;
     }
 
-    [HttpPut]
-    public async Task<ActionResult> Put([FromBody] string value)
+    [HttpGet]
+    public async Task<ActionResult<WebsiteConfigResponseDto>> Get(CancellationToken token)
     {
-        return Ok(value);
+        var result = await _websiteService.GetWebsiteInfoAsync(token);
+        return this.ReturnActionResult(result);
+    }
+
+    [HttpPut("changeConfig")]
+    public async Task<ActionResult<WebsiteConfigResponseDto>> ChangeConfig(
+        [FromBody] WebsiteConfigUpdateRequestDto websiteConfigUpdate, 
+        CancellationToken token)
+    {
+        var result = await _websiteService.UpdateWebsiteConfig(websiteConfigUpdate, token);
+        return this.ReturnActionResult(result);
+    }
+
+    [HttpPut("changeName")]
+    public async Task<ActionResult> ChangeName(
+        [FromBody] ChangeNameRequestDto changeNameRequest, 
+        CancellationToken token)
+    {
+        var result = await _websiteService.ChangeNameAsync(changeNameRequest, token);
+        return this.ReturnActionResult(result);
+    }
+
+    [HttpPut("changePassword")]
+    public async Task<ActionResult> ChangePassword(
+        [FromBody] ChangePasswordRequestDto changePasswordRequest, 
+        CancellationToken token)
+    {
+        var result = await _websiteService.ChangePasswordAsync(changePasswordRequest, token);
+        return this.ReturnActionResult(result);
     }
 }

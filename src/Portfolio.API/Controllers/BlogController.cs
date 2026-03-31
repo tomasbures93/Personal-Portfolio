@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Portfolio.Domain.Entities;
-using Portfolio.Domain.Enums;
+﻿using Microsoft.AspNetCore.Mvc;
+using Portfolio.API.Extensions;
+using Portfolio.Application.Abstraction.Services;
+using Portfolio.Application.DTO.Request;
+using Portfolio.Application.DTO.Response;
 
 namespace Portfolio.API.Controllers;
 
@@ -9,33 +10,51 @@ namespace Portfolio.API.Controllers;
 [ApiController]
 public class BlogController : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> Get()
+    private readonly IBlogService _blogService;
+
+    public BlogController(IBlogService blogService)
     {
-        return Ok(new List<string> { "Blog post 1", "Blog post 2", "Blog post 3" });
+        _blogService = blogService;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<BlogPostResponseDto>>> Get(CancellationToken token)
+    {
+        var result = await _blogService.GetBlogsAsync(token);
+        return this.ReturnActionResult(result);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetSingle(int id)
+    public async Task<ActionResult<BlogPostResponseDto>> GetSingle(
+        int id, 
+        CancellationToken token)
     {
-        return Ok($"Blog post {id}");
+        var result = await _blogService.GetBlogAsync(id, token);
+        return this.ReturnActionResult(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] string value)
+    public async Task<ActionResult<BlogPostResponseDto>> Post(
+        [FromBody] BlogRequestDto blogRequestDto, 
+        CancellationToken token)
     {
-        return Ok($"Created blog post: {value}");
+        var result = await _blogService.CreateBlogAsync(blogRequestDto, token);
+        return this.ReturnActionResult(result);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] string value)
+    [HttpPut]
+    public async Task<ActionResult<BlogPostResponseDto>> Put(
+        [FromBody] BlogUpdateRequestDto blogUpdateRequest,
+        CancellationToken token)
     {
-        return Ok($"Updated blog post {id} with value: {value}");
+        var result = await _blogService.UpdateBlogAsync(blogUpdateRequest, token);
+        return this.ReturnActionResult(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<ActionResult> Delete(int id, CancellationToken token)
     {
-        return Ok($"Deleted blog post {id}");
+        var result = await _blogService.DeleteBlogAsync(id, token);
+        return this.ReturnActionResult(result);
     }
 }

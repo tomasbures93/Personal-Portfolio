@@ -27,6 +27,7 @@ public sealed class Project
     public Project(int id, string title, string description, List<Technology> technologies, string? url = null)
     {
         Guard.ValidId(id, nameof(id));
+        Id = id;
         UpdateTitle(title);
         UpdateDescription(description);
         UpdateTechnologies(technologies);
@@ -45,11 +46,15 @@ public sealed class Project
         Description = description.Trim();
     }
 
-    // TODO: Check the logic !!! Only placeholder for now
     public void UpdateTechnologies(List<Technology> technologies)
     {
         Guard.TechnologiesAreNotEmpty(technologies, nameof(technologies));
-        Technologies = technologies;
+        Technologies.Clear();
+
+        foreach(var technology in technologies)
+        {
+            Technologies.Add(technology); 
+        }
     }
 
     public void UpdateUrl(string? url)

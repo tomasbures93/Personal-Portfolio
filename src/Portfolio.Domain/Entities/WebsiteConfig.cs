@@ -10,9 +10,9 @@ public sealed class WebsiteConfig
 
     public string UserName { get; set; }
 
-    public string Password { get; set; }
+    public string PasswordHash { get; set; }
 
-    public ICollection<Technology> Technologies { get; set; } = new List<Technology>();
+    public ICollection<Technology>? Technologies { get; set; } = new List<Technology>();
 
     public WebsiteConfig() { }
 
@@ -31,11 +31,16 @@ public sealed class WebsiteConfig
     public void UpdateTechnologies(List<Technology> technologies)
     {
         Guard.TechnologiesAreNotEmpty(technologies, nameof(technologies));
-        Technologies = technologies;
+        Technologies.Clear();
+
+        foreach(var technology in technologies)
+        {
+            Technologies.Add(technology);
+        }
     }
 
     public void UpdatePassword(string password)
     {
-        Password = password;
+        PasswordHash = password;
     }
 }

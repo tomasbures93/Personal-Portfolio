@@ -9,4 +9,5 @@
   <Project Path="src/Portfolio.Application/Portfolio.Application.csproj" />
   <Project Path="src/Portfolio.Domain/Portfolio.Domain.csproj" />
   <Project Path="src/Portfolio.Infrastructure/Portfolio.Infrastructure.csproj" />
+  <Project Path="src/Portfolio.Tests/Portfolio.Tests.csproj" Id="96b5509d-32ca-46d2-9054-c2c1e54b521c" />
 </Solution>

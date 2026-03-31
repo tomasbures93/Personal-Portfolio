@@ -18,28 +18,35 @@ public class TechnologyController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<TechnologyResponseDto>>> Get(CancellationToken token)
+    public async Task<ActionResult<List<TechnologyResponseDto>>> Get(
+        CancellationToken token)
     {
         var result = await _technologyService.GetTechnologiesAsync(token);
         return this.ReturnActionResult(result);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TechnologyResponseDto>> GetSingle(int id, CancellationToken token)
+    public async Task<ActionResult<TechnologyResponseDto>> GetSingle(
+        int id, 
+        CancellationToken token)
     {
         var result = await _technologyService.GetTechnologyAsync(id, token);
         return this.ReturnActionResult(result);
     }
 
     [HttpPost]
-    public async Task<ActionResult<TechnologyResponseDto>> Post([FromBody] TechnologyRequestDto technologyCreate, CancellationToken token)
+    public async Task<ActionResult<TechnologyResponseDto>> Post(
+        [FromBody] TechnologyRequestDto technologyCreate, 
+        CancellationToken token)
     {
         var result = await _technologyService.CreateTechnologyAsync(technologyCreate, token);
         return this.ReturnActionResult(result);
     }
 
     [HttpPut]
-    public async Task<ActionResult<TechnologyResponseDto>> Put([FromBody] TechnologyUpdateRequestDto technologyUpdate, CancellationToken token)
+    public async Task<ActionResult<TechnologyResponseDto>> Put(
+        [FromBody] TechnologyUpdateRequestDto technologyUpdate, 
+        CancellationToken token)
     {
         var result = await _technologyService.UpdateTechnologyAsync(technologyUpdate, token);
         return this.ReturnActionResult(result);

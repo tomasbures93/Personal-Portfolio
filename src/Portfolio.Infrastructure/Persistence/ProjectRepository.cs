@@ -35,24 +35,27 @@ public sealed class ProjectRepository : IProjectRepository
 
     public async Task<Project?> GetProjectAsync(int id, CancellationToken token)
     {
-        return await _dbContext.Projects.SingleOrDefaultAsync(p => p.Id == id, token);
+        return await _dbContext.Projects.Include(t => t.Technologies).SingleOrDefaultAsync(p => p.Id == id, token);
     }
 
     public async Task<List<Project>> GetProjectsAsync(CancellationToken token)
     {
-        return await _dbContext.Projects.ToListAsync(token);
+        return await _dbContext.Projects.Include(t => t.Technologies).ToListAsync(token);
     }
 
     public async Task<Project?> UpdateProjectAsync(Project project, CancellationToken token)
     {
-        var existingProject = await _dbContext.Projects.SingleOrDefaultAsync(p => p.Id == project.Id, token);
+        var existingProject = await _dbContext.Projects
+            .Include(t => t.Technologies)
+            .SingleOrDefaultAsync(p => p.Id == project.Id, token);
+
         if (existingProject == null)
             return null;
 
         existingProject.UpdateTitle(project.Title);
         existingProject.UpdateDescription(project.Description);
         existingProject.UpdateUrl(project.Url);
-        existingProject.UpdateTechnologies((List<Technology>)project.Technologies);
+        existingProject.UpdateTechnologies(project.Technologies.ToList());
 
         await _dbContext.SaveChangesAsync();
 

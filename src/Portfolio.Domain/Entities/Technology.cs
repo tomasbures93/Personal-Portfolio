@@ -13,9 +13,9 @@ public class Technology
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
 
-    public int WebsiteConfigId { get; set; }
+    public int? WebsiteConfigId { get; set; }
 
-    public WebsiteConfig WebsiteConfig { get; set; }
+    public WebsiteConfig? WebsiteConfig { get; set; }
 
     protected Technology() { }
 

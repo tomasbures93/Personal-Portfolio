@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Portfolio.API.Extensions;
+using Portfolio.Application.Abstraction.Services;
+using Portfolio.Application.DTO.Request;
+using Portfolio.Application.DTO.Response;
 
 namespace Portfolio.API.Controllers;
 
@@ -7,33 +10,51 @@ namespace Portfolio.API.Controllers;
 [ApiController]
 public class ProjectController : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> Get()
+    private readonly IProjectService _projectService;
+
+    public ProjectController(IProjectService projectService)
     {
-        return Ok(new List<string> { "Project 1", "Project 2", "Project 3" });
+        _projectService = projectService;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProjectResponseDto>>> Get(CancellationToken token)
+    {
+        var result = await _projectService.GetProjectsAsync(token);
+        return this.ReturnActionResult(result);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetSingle(int id)
+    public async Task<ActionResult<ProjectResponseDto>> GetSingle(
+        int id, 
+        CancellationToken token)
     {
-        return Ok($"Project {id}");
+        var result = await _projectService.GetProjectAsync(id, token);
+        return this.ReturnActionResult(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] string value)
+    public async Task<ActionResult<ProjectResponseDto>> Post(
+        [FromBody] ProjectRequestDto projectRequestDto, 
+        CancellationToken token)
     {
-        return Ok($"Created project: {value}");
+        var result = await _projectService.CreateProjectAsync(projectRequestDto, token);
+        return this.ReturnActionResult(result);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] string value)
+    [HttpPut]
+    public async Task<ActionResult<ProjectResponseDto>> Put(
+        [FromBody] ProjectUpdateRequestDto projectUpdateRequest, 
+        CancellationToken token)
     {
-        return Ok($"Updated project {id} with value: {value}");
+        var result = await _projectService.UpdateProjectAsync(projectUpdateRequest, token);
+        return this.ReturnActionResult(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<ActionResult> Delete(int id, CancellationToken token)
     {
-        return Ok($"Deleted project {id}");
+        var result = await _projectService.DeleteProjectAsync(id, token);
+        return this.ReturnActionResult(result);
     }
 }

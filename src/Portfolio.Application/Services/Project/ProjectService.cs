@@ -10,17 +10,20 @@ namespace Portfolio.Application.Services.Project;
 public sealed class ProjectService : IProjectService
 {
     private readonly IProjectRepository _projectRepository;
+    private readonly ITechnologyRepository _technologyRepository;
     private readonly IValidate<int> _validateID;
     private readonly IValidate<ProjectRequestDto> _validateCreateProjectRequest;
     private readonly IValidate<ProjectUpdateRequestDto> _validateProjectUpdateRequest;
 
     public ProjectService(
         IProjectRepository projectRepository,
+        ITechnologyRepository technologyRepository,
         IValidate<int> validateID,
         IValidate<ProjectRequestDto> validateCreateProjectRequest,
         IValidate<ProjectUpdateRequestDto> validateProjectUpdateRequest)
     {
         _projectRepository = projectRepository;
+        _technologyRepository = technologyRepository;
         _validateID = validateID;
         _validateCreateProjectRequest = validateCreateProjectRequest;
         _validateProjectUpdateRequest = validateProjectUpdateRequest;
@@ -32,13 +35,18 @@ public sealed class ProjectService : IProjectService
         if (!validationResult.IsValid)
             return Result<ProjectResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
 
+        var technologies = await _technologyRepository.GetTechnologiesAsync(token);
+        if (technologies == null || !technologies.Any())
+            return Result<ProjectResponseDto>.Failure(ResultStatus.Error, "No technologies found in DB");
+
+        var technologiesToAdd = technologies.Where(i => projectRequestDto.technologies.Contains(i.Id)).ToList();
+        if(technologiesToAdd == null || !technologiesToAdd.Any())
+            return Result<ProjectResponseDto>.Failure(ResultStatus.Error, "You are trying to add Technologies which are not in DB, create those technologies first");
+
         var projectModel = new Portfolio.Domain.Entities.Project(
             projectRequestDto.title,
             projectRequestDto.description,
-            projectRequestDto.technologies.Select(t => new Domain.Entities.Technology(
-                t.id, 
-                t.name, 
-                t.category)).ToList(),
+            technologiesToAdd,
             projectRequestDto.url);
         var project = await _projectRepository.CreateProjectAsync(projectModel, token);
 
@@ -115,14 +123,19 @@ public sealed class ProjectService : IProjectService
         if (!validationResult.IsValid)
             return Result<ProjectResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
 
+        var technologies = await _technologyRepository.GetTechnologiesAsync(token);
+        if (technologies == null || !technologies.Any())
+            return Result<ProjectResponseDto>.Failure(ResultStatus.Error, "No technologies found in DB");
+
+        var technologiesToUpdate = technologies.Where(i => projectUpdateRequestDto.technologies.Contains(i.Id)).ToList();
+        if (technologiesToUpdate == null || !technologiesToUpdate.Any())
+            return Result<ProjectResponseDto>.Failure(ResultStatus.Error, "No technologies found in DB, add some first and try again");
+
         var projectModel = new Portfolio.Domain.Entities.Project(
             projectUpdateRequestDto.id,
             projectUpdateRequestDto.title,
             projectUpdateRequestDto.description,
-            projectUpdateRequestDto.technologies.Select(t => new Domain.Entities.Technology(
-                t.id,
-                t.name,
-                t.category)).ToList(),
+            technologiesToUpdate,
             projectUpdateRequestDto.url);
         var project = await _projectRepository.UpdateProjectAsync(projectModel, token);
         if (project == null)

@@ -2,4 +2,4 @@
 
 public sealed record WebsiteConfigUpdateRequestDto(
     string email,
-    List<TechnologyRequestDto> technologies);
+    List<int> technologies);

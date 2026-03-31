@@ -22,6 +22,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: my-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: test@test.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5555:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
 volumes:
   postgres_data:
+  pgadmin_data:
   
