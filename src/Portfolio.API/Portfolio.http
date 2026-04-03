@@ -1,0 +1,6 @@
+@Portfolio_HostAddress = https://localhost:51000
+
+GET {{Portfolio_HostAddress}}/api/blog/
+Accept: application/json
+
+###

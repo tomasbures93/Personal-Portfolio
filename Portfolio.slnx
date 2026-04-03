@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Plan.md" />
+  </Folder>
+  <Project Path="deployment/docker-compose.dcproj" Id="81dded9d-158b-e303-5f62-77a2896d2a5a">
+    <Build />
+  </Project>
+  <Project Path="src/Portfolio.API/Portfolio.API.csproj" />
+  <Project Path="src/Portfolio.Application/Portfolio.Application.csproj" />
+  <Project Path="src/Portfolio.Domain/Portfolio.Domain.csproj" />
+  <Project Path="src/Portfolio.Infrastructure/Portfolio.Infrastructure.csproj" />
+  <Project Path="src/Portfolio.Tests/Portfolio.Tests.csproj" Id="96b5509d-32ca-46d2-9054-c2c1e54b521c" />
+</Solution>
