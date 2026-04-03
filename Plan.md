@@ -13,7 +13,7 @@
 
 ## Define the App Scope
 ### What the app does?  
-It will be personal Portfolio, to show my skills and program something
+It will be personal Portfolio, to show my skills and programs I made
 
 ### Main Features  
 - I can show projects I worked on
@@ -33,7 +33,7 @@ It will be personal Portfolio, to show my skills and program something
   - User can contact me via Email
   - User can subscribe to newsletter -> Why would someone do that ? :D
 - Phase 3
-  - Added Monitoring with Grafana/Prometheus
+  - Add Monitoring with Grafana/Prometheus
 - Phase 4
   - Deployment
 
