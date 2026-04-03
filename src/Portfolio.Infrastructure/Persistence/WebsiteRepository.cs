@@ -32,7 +32,7 @@ public sealed class WebsiteRepository : IWebsiteRepository
         if (websiteConfig == null)
             return false;
 
-        websiteConfig.UpdatePassword(newPassword);
+        websiteConfig.UpdatePasswordHash(newPassword);
 
         await _dbContext.SaveChangesAsync(token);
 

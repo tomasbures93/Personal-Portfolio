@@ -10,6 +10,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionString: "Host=postgres;Port=5432;Database=Portfolio;Username=appuser;Password=Test123!"
+      PortfolioConfig__AdminPassword: "Admin123!"
+      PortfolioConfig__AdminEmail: "Admin@Admin.de"
+      PortfolioConfig__AdminUsername: "Admin"
     ports: 
       - "12345:8081"
 

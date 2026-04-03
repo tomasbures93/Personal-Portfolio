@@ -39,8 +39,8 @@ public sealed class WebsiteConfig
         }
     }
 
-    public void UpdatePassword(string password)
+    public void UpdatePasswordHash(string newHash)
     {
-        PasswordHash = password;
+        PasswordHash = newHash;
     }
 }

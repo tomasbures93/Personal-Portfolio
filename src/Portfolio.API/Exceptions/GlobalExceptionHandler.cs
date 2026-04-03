@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using System.Security.Cryptography;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Portfolio.Domain.Exceptions;
 
 namespace Portfolio.API.Exceptions;
@@ -13,21 +16,24 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
 
         var problemDetails = exception switch
         {
-            DomainException ex => HandleDomainException(path, ex, cancellationToken),
-            _ => HandleUnexpected(path, exception, cancellationToken)
+            DomainException ex => HandleDomainException(path, ex),
+            _ => HandleUnexpected(path, exception)
         };
 
-        httpContext.Response.StatusCode = problemDetails.Status.Value;
+        httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
+
+        httpContext.Response.ContentType = "application/problem+json";
+
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
         return true;
     }
 
-    private ProblemDetails HandleDomainException(string path, DomainException exception,  CancellationToken cancellationToken)
+    private ProblemDetails HandleDomainException(string path, DomainException exception)
     {
         var problemDetails = new ProblemDetails
         {
-            Type = exception.GetType().Name,
+            Type = "https://datatracker.ietf.org/doc/html/rfc9110#name-status-codes",
             Title = "An error occurred in Domain Layer.",
             Detail = exception.Message,
             Status = StatusCodes.Status400BadRequest,
@@ -36,11 +42,11 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
         return problemDetails;
     }
 
-    private ProblemDetails HandleUnexpected(string path, Exception exception, CancellationToken cancellationToken)
+    private ProblemDetails HandleUnexpected(string path, Exception exception)
     {
         var problemDetails = new ProblemDetails
         {
-            Type = exception.GetType().Name,
+            Type = "https://datatracker.ietf.org/doc/html/rfc9110#name-status-codes",
             Title = "Something went horribly wrong.",
             Detail = exception.Message,
             Status = StatusCodes.Status500InternalServerError,
