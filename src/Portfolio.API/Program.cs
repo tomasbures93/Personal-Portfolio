@@ -8,7 +8,6 @@ using Portfolio.Infrastructure.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 // Database Config
@@ -33,7 +32,7 @@ await using (var scope = app.Services.CreateAsyncScope())
 
     if (!db.WebsiteConfig.Any())
     {
-        // FAKE DATA FOR TESTING!
+        // FAKE DATA FOR TESTING! WILL BE CHANGED SOON!
         var config = new WebsiteConfig();
         config.ChangeUserName("TestUser");
         config.ChangeEmail("email");
@@ -48,14 +47,17 @@ await using (var scope = app.Services.CreateAsyncScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API V1");
+    });
 }
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseExceptionHandler();
 
 app.Run();

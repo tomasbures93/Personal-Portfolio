@@ -7,6 +7,9 @@ services:
     build:
       context: ..
       dockerfile: src/Portfolio.API/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionString: "Host=postgres;Port=5432;Database=Portfolio;Username=appuser;Password=Test123!"
     ports: 
       - "12345:8081"
 

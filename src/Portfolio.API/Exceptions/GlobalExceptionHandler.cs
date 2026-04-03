@@ -28,7 +28,7 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
         var problemDetails = new ProblemDetails
         {
             Type = exception.GetType().Name,
-            Title = "An error occurred.",
+            Title = "An error occurred in Domain Layer.",
             Detail = exception.Message,
             Status = StatusCodes.Status400BadRequest,
             Instance = path

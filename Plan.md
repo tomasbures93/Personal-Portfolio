@@ -20,13 +20,13 @@ It will be personal Portfolio, to show my skills and program something
 - I show my skills and Tools I can use
 - I have Blog section
 
-### Versions
+### Phases
 - Phase 1
   - Whole Backend is done
-  - I can add Technologies to my list
-  - I can add Project to my list
-  - I can add BlogPosts
-  - I can manage WebsiteConfig
+  - ~~I can add Technologies~~ 
+  - ~~I can add Projects~~
+  - ~~I can add BlogPosts~~
+  - ~~I can manage WebsiteConfig~~
   - Logging
 - Phase 2
   - Frontend is done
@@ -43,6 +43,10 @@ We will have couple of pages
 - /Projects - Extra page with all projects
 - /Blog - Blog posts
 - /Admin - Adminpanel (Auth needed)
+  - /Admin/Projects - Manage Projects
+  - /Admin/BlogPosts - Manage BlogPosts
+  - /Admin/Technologies - Manage Technologies
+  - /Admin/Website - Manage WebsiteConfig
 
 ## Backend
 ### Classes
@@ -81,7 +85,10 @@ Which endpoints need Auth?
 - ~~Git Strategy~~
 - ~~PasswordValidation Logic~~
 - ~~Update logic for adding technologies in the DB and updating them~~
-- AuthN/AuthZ + PasswordHasher
+- AuthN/AuthZ over ASP.NET Identity
+  - Using build in PasswordHasher
+  - HttpsCookie Authentication
+  - CSFR-Token Validation
 - Data seeding (Admin User)
 - Tests
 - CI pipeline
@@ -97,8 +104,8 @@ Which endpoints need Auth?
 - Update docker-compose file
 - Setup Grafana 
 - Setup Program.cs to export Metrics/Traces/Logs
-- Test -> All good? -> You won!
+- Test -> All good? -> Enjoy -> Profit
 
 ## TODO Phase 4
-- from CI to CI/CD with Github actions
 - Deployment to Hetzen -> burest.net
+- from CI to CI/CD with Github actions over SSH to Hetzner

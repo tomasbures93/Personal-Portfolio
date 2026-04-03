@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "portfolio.api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
+      "serviceActions": {
+        "pgadmin": "StartWithoutDebugging",
+        "portfolio.api": "StartDebugging",
+        "postgres": "StartWithoutDebugging"
+      }
+    }
+  }
+}
