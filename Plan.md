@@ -88,11 +88,11 @@ Which endpoints need Auth and Antiforgery?
 - ~~AuthN/AuthZ over ASP.NET Identity~~
   - ~~Using build in PasswordHasher~~
   - ~~HttpsCookie Authentication~~
-  - ~~CSFR-Token Validation~~
+  - ~~CSFR - Cross-Site Request Forgery - Token Validation~~
 - ~~Data seeding (Admin User)~~
 - Tests
 - CI pipeline
-- Config / Environment 
+- Config / Environment - Validation
 - Logging
 
 ## TODO Phase 2

@@ -1,8 +1,5 @@
-﻿using System.Security.Cryptography;
-using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Portfolio.Domain.Exceptions;
 
 namespace Portfolio.API.Exceptions;

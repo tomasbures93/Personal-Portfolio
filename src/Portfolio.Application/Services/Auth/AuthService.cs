@@ -5,6 +5,7 @@ using Portfolio.Application.DTO.Request;
 using Portfolio.Application.DTO.Response;
 using Microsoft.AspNetCore.Identity;
 using Portfolio.Domain.Entities;
+using Portfolio.Application.Abstraction.Validator;
 
 namespace Portfolio.Application.Services.Auth;
 
@@ -12,15 +13,20 @@ public class AuthService : IAuthService
 {
     private readonly IWebsiteRepository _websiteRepository;
     private readonly PasswordHasher<WebsiteConfig> _passwordHasher = new();
+    private readonly IValidate<LoginRequestDto> _validate;
 
-    public AuthService(IWebsiteRepository websiteRepository)
+    public AuthService(IWebsiteRepository websiteRepository, IValidate<LoginRequestDto> validate)
     {
         _websiteRepository = websiteRepository;
+        _validate = validate;
     }
 
     public async Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto loginRequestDto, CancellationToken token)
     {
-        // TODO: Validation mechanism for loginRequestDto
+        var validationResult = _validate.Validate(loginRequestDto);
+        if (validationResult.Errors.Any())
+            return Result<LoginResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
+
         var config = await _websiteRepository.GetWebsiteInfoAsync(token);
         if (config == null)
             Result<LoginResponseDto>.Failure(ResultStatus.Error, "Critical Error - Website configuration not found!!");

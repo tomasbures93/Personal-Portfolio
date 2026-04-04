@@ -12,13 +12,14 @@ using Portfolio.Infrastructure.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-// PortfolioConfig with validation extra against ""
+// PortfolioConfig with extra validation against ""
 builder.Services.AddOptions<PortfolioConfig>()
     .Bind(builder.Configuration.GetSection("PortfolioConfig"))
     .ValidateDataAnnotations()
+    .Validate(x => !string.IsNullOrWhiteSpace(x.AdminUserName),
+        "PortfolioConfig:AdminUserEmail is required.")
     .Validate(x => !string.IsNullOrWhiteSpace(x.AdminEmail),
         "PortfolioConfig:AdminEmail is required.")
     .Validate(x => !string.IsNullOrWhiteSpace(x.AdminPassword),
@@ -59,6 +60,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 
+// Antiforgery CSRF ( Cross-Site Request Forgery ) Token Config
 builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "X-CSRF-TOKEN";
@@ -68,48 +70,67 @@ builder.Services.AddAntiforgery(options =>
     options.SuppressXFrameOptionsHeader = false;
 });
 
-var app = builder.Build();
-
-await using (var scope = app.Services.CreateAsyncScope())
+try
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var config =scope.ServiceProvider.GetRequiredService<IOptions<PortfolioConfig>>().Value;
+    var app = builder.Build();
 
-    // TODO: Change it to migration
-    await db.Database.EnsureDeletedAsync();
-    await db.Database.EnsureCreatedAsync();
-
-    if (!db.WebsiteConfig.Any())
+    await using (var scope = app.Services.CreateAsyncScope())
     {
-        var websiteConfig = new WebsiteConfig();
-        websiteConfig.ChangeUserName(config.AdminUserName);
-        websiteConfig.ChangeEmail(config.AdminEmail);
-        var passwordHasher = new PasswordHasher<WebsiteConfig>();
-        websiteConfig.UpdatePasswordHash(passwordHasher.HashPassword(websiteConfig, config.AdminPassword));
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var config = scope.ServiceProvider.GetRequiredService<IOptions<PortfolioConfig>>().Value;
 
-        await db.WebsiteConfig.AddAsync(websiteConfig);
-        await db.SaveChangesAsync();
+        // TODO: Change it to migration
+        await db.Database.EnsureDeletedAsync();
+        await db.Database.EnsureCreatedAsync();
+
+        if (!db.WebsiteConfig.Any())
+        {
+            var passwordHasher = new PasswordHasher<WebsiteConfig>();
+            var websiteConfig = new WebsiteConfig();
+
+            websiteConfig.ChangeUserName(config.AdminUserName);
+            websiteConfig.ChangeEmail(config.AdminEmail);
+            websiteConfig.UpdatePasswordHash(passwordHasher.HashPassword(websiteConfig, config.AdminPassword));
+
+            await db.WebsiteConfig.AddAsync(websiteConfig);
+            await db.SaveChangesAsync();
+        }
     }
-}
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwaggerUI(options =>
+    if (app.Environment.IsDevelopment())
     {
-        options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API V1");
-    });
+        app.MapOpenApi();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API V1");
+        });
+    }
+    app.UseExceptionHandler();
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.UseAntiforgery();
+
+    app.MapControllers();
+
+    app.Run();
+} 
+catch ( OptionsValidationException ex)
+{
+    //TODO : Propper logging 
+    Console.WriteLine("Configuration validation failed:");
+    foreach (var failure in ex.Failures)
+    {
+        Console.WriteLine($"- {failure}");
+    }
+    throw;
 }
-app.UseExceptionHandler();
-
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseAntiforgery();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    //TODO : Propper logging 
+    Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+    throw;
+}

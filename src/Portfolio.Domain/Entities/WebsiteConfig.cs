@@ -6,12 +6,13 @@ public sealed class WebsiteConfig
 {
     public int Id { get; init; }
 
-    public string Email { get; set; }
+    public string Email { get; private set; }
 
-    public string UserName { get; set; }
+    public string UserName { get; private set; }
 
-    public string PasswordHash { get; set; }
+    public string PasswordHash { get; private set; }
 
+    // TODO: There is better approach to handle this => IReadOnlyCollection to protect the collection from outside!!
     public ICollection<Technology>? Technologies { get; set; } = new List<Technology>();
 
     public WebsiteConfig() { }
@@ -41,6 +42,7 @@ public sealed class WebsiteConfig
 
     public void UpdatePasswordHash(string newHash)
     {
+        Guard.AgainstNullOrWhiteSpace(newHash, nameof(newHash));
         PasswordHash = newHash;
     }
 }
