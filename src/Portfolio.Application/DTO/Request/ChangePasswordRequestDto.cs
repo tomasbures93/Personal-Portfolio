@@ -1,3 +1,3 @@
 ﻿namespace Portfolio.Application.DTO.Request;
 
-public sealed record ChangePasswordRequestDto(string password);
+public sealed record ChangePasswordRequestDto(string oldPassword, string newPassword);

@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Portfolio.Application.Abstraction.Services;
 using Portfolio.Application.Abstraction.Validator;
 using Portfolio.Application.Common.Validator;
 using Portfolio.Application.DTO.Request;
+using Portfolio.Application.Services.Auth;
+using Portfolio.Application.Services.Auth.Validator;
 using Portfolio.Application.Services.Blog;
 using Portfolio.Application.Services.Blog.Validator;
 using Portfolio.Application.Services.Project;
@@ -11,6 +14,7 @@ using Portfolio.Application.Services.Technology;
 using Portfolio.Application.Services.Technology.Validator;
 using Portfolio.Application.Services.Website;
 using Portfolio.Application.Services.Website.Validator;
+using Portfolio.Domain.Entities;
 
 namespace Portfolio.Application.DependencyInjection;
 
@@ -22,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IWebsiteService, WebsiteService>();
         services.AddScoped<IBlogService, BlogService>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         services.AddScoped<IValidate<int>, ValidateID>();
         services.AddScoped<IValidate<ChangeNameRequestDto>, ValidateChangeName>();
@@ -33,6 +38,9 @@ public static class DependencyInjection
         services.AddScoped<IValidate<BlogRequestDto>, ValidateCreateBlog>();
         services.AddScoped<IValidate<BlogUpdateRequestDto>, ValidateUpdateBlog>();
         services.AddScoped<IValidate<WebsiteConfigUpdateRequestDto>, ValidateUpdateWebsiteConfig>();
+        services.AddScoped<IValidate<LoginRequestDto>, ValidateLoginRequest>();
+
+        services.AddScoped<IPasswordHasher<WebsiteConfig>, PasswordHasher<WebsiteConfig>>();    
 
         return services;
     }

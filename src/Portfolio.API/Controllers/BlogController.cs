@@ -38,7 +38,8 @@ public class BlogController : ControllerBase
         [FromBody] BlogRequestDto blogRequestDto, 
         CancellationToken token)
     {
-        var result = await _blogService.CreateBlogAsync(blogRequestDto, token);
+        var user = HttpContext.User.Identity?.Name;
+        var result = await _blogService.CreateBlogAsync(blogRequestDto, user!, token);
         return this.ReturnActionResult(result);
     }
 

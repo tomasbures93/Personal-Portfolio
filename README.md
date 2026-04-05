@@ -12,10 +12,16 @@ The project is currently in Phase 1.
 ### Implemented so far
 - Basic API structure
 - Core backend features
+- Add technologies
+- Add projects
+- Add blog posts
+- Manage website configuration
+- Authentication and authorization with ASP.NET Identity
+- HTTPS cookie authentication
+- CSRF token protection
 
 ### Implementing next step
-- Authentication and authorization with ASP.NET Identity
-- Authentication approach: HTTPS cookies with CSRF protection
+- Logging
 
 ## Tech Stack
 
@@ -33,15 +39,7 @@ The project is currently in Phase 1.
 ## Roadmap
 
 ### Phase 1
-- Complete backend
-- Add technologies
-- Add projects
-- Add blog posts
-- Manage website configuration
 - Logging
-- Authentication and authorization with ASP.NET Identity
-- HTTPS cookie authentication
-- CSRF token protection
 
 ### Phase 2
 - Choose a frontend framework

@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Portfolio.API.Configuration;
 using Portfolio.API.Exceptions;
 using Portfolio.Application.DependencyInjection;
 using Portfolio.Domain.Entities;
@@ -7,8 +11,20 @@ using Portfolio.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
 builder.Services.AddOpenApi();
+
+// PortfolioConfig with extra validation against ""
+builder.Services.AddOptions<PortfolioConfig>()
+    .Bind(builder.Configuration.GetSection("PortfolioConfig"))
+    .ValidateDataAnnotations()
+    .Validate(x => !string.IsNullOrWhiteSpace(x.AdminUserName),
+        "PortfolioConfig:AdminUserEmail is required.")
+    .Validate(x => !string.IsNullOrWhiteSpace(x.AdminEmail),
+        "PortfolioConfig:AdminEmail is required.")
+    .Validate(x => !string.IsNullOrWhiteSpace(x.AdminPassword),
+        "PortfolioConfig:AdminPassword is required.")
+    .ValidateOnStart();
 
 // Database Config
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration["ConnectionString"]));
@@ -21,43 +37,100 @@ builder.Services.AddInfrastructure();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-var app = builder.Build();
-
-await using (var scope = app.Services.CreateAsyncScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    // TODO: Change it to migration
-    await db.Database.EnsureCreatedAsync();
-
-    if (!db.WebsiteConfig.Any())
+// AuthCookie Config
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        // FAKE DATA FOR TESTING! WILL BE CHANGED SOON!
-        var config = new WebsiteConfig();
-        config.ChangeUserName("TestUser");
-        config.ChangeEmail("email");
-        config.UpdatePassword("password");
+        options.Cookie.Name = "admin_auth";
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;
 
-        await db.WebsiteConfig.AddAsync(config);
-        await db.SaveChangesAsync();
-    }
-}
+        options.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        };
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API V1");
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        };
     });
+
+// Antiforgery CSRF ( Cross-Site Request Forgery ) Token Config
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.SuppressXFrameOptionsHeader = false;
+});
+
+try
+{
+    var app = builder.Build();
+
+    await using (var scope = app.Services.CreateAsyncScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var config = scope.ServiceProvider.GetRequiredService<IOptions<PortfolioConfig>>().Value;
+
+        // TODO: Change it to migration
+        await db.Database.EnsureDeletedAsync();
+        await db.Database.EnsureCreatedAsync();
+
+        if (!db.WebsiteConfig.Any())
+        {
+            var passwordHasher = new PasswordHasher<WebsiteConfig>();
+            var websiteConfig = new WebsiteConfig();
+
+            websiteConfig.ChangeUserName(config.AdminUserName);
+            websiteConfig.ChangeEmail(config.AdminEmail);
+            websiteConfig.UpdatePasswordHash(passwordHasher.HashPassword(websiteConfig, config.AdminPassword));
+
+            await db.WebsiteConfig.AddAsync(websiteConfig);
+            await db.SaveChangesAsync();
+        }
+    }
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API V1");
+        });
+    }
+    app.UseExceptionHandler();
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.UseAntiforgery();
+
+    app.MapControllers();
+
+    app.Run();
+} 
+catch ( OptionsValidationException ex)
+{
+    //TODO : Propper logging 
+    Console.WriteLine("Configuration validation failed:");
+    foreach (var failure in ex.Failures)
+    {
+        Console.WriteLine($"- {failure}");
+    }
+    throw;
 }
-app.UseExceptionHandler();
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    //TODO : Propper logging 
+    Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+    throw;
+}

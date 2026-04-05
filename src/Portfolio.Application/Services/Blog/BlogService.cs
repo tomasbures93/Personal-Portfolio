@@ -1,4 +1,5 @@
-﻿using Portfolio.Application.Abstraction.Persistence;
+﻿using Microsoft.AspNetCore.Http;
+using Portfolio.Application.Abstraction.Persistence;
 using Portfolio.Application.Abstraction.Services;
 using Portfolio.Application.Abstraction.Validator;
 using Portfolio.Application.Common.Results;
@@ -27,14 +28,13 @@ public sealed class BlogService : IBlogService
         _validateBlogUpdateRequest = validateBlogUpdateRequest;
     }
 
-    // TODO: Add Creator from Auth
-    public async Task<Result<BlogPostResponseDto>> CreateBlogAsync(BlogRequestDto blogRequestDto, CancellationToken token)
+    public async Task<Result<BlogPostResponseDto>> CreateBlogAsync(BlogRequestDto blogRequestDto, string creator, CancellationToken token)
     {
         var validationResult = _validateBlogCreateRequest.Validate(blogRequestDto);
         if (!validationResult.IsValid)
             return Result<BlogPostResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
 
-        var blogModel = new BlogPost(blogRequestDto.title, blogRequestDto.content, blogRequestDto.draft, "Default");
+        var blogModel = new BlogPost(blogRequestDto.title, blogRequestDto.content, blogRequestDto.draft, creator);
         var blog = await _repository.CreateBlogAsync(blogModel, token);
 
         var blogDto = new BlogPostResponseDto(

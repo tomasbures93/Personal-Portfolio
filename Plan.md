@@ -77,7 +77,7 @@ while it be created with default values while deploying~~
 ~~Database will be done over OR-Mapper - EntityFrameworkCore~~
 
 ## API Contracts
-Which endpoints need Auth?
+Which endpoints need Auth and Antiforgery?
 - All Post, Put, Delete
 
 ## TODO Phase 1
@@ -85,20 +85,22 @@ Which endpoints need Auth?
 - ~~Git Strategy~~
 - ~~PasswordValidation Logic~~
 - ~~Update logic for adding technologies in the DB and updating them~~
-- AuthN/AuthZ over ASP.NET Identity
-  - Using build in PasswordHasher
-  - HttpsCookie Authentication
-  - CSFR-Token Validation
-- Data seeding (Admin User)
+- ~~AuthN/AuthZ over ASP.NET Identity~~
+  - ~~Using build in PasswordHasher~~
+  - ~~HttpsCookie Authentication~~
+  - ~~CSFR - Cross-Site Request Forgery - Token Validation~~
+- ~~Data seeding (Admin User)~~
 - Tests
 - CI pipeline
-- Config / Environment 
+- ~~Config / Environment - Validation~~
 - Logging
 
 ## TODO Phase 2
 - Pick a Frontend Framework
 - Plan Frontend
+- Backend CORS configuration
 - Code -> Enjoy -> Profit
+- Auth Testing
 
 ## TODO Phase 3
 - Update docker-compose file

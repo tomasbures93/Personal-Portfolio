@@ -12,7 +12,7 @@ public interface IBlogService
 
     Task<Result> DeleteBlogAsync(int blogId, CancellationToken token);
 
-    Task<Result<BlogPostResponseDto>> CreateBlogAsync(BlogRequestDto blogRequestDto, CancellationToken token);
+    Task<Result<BlogPostResponseDto>> CreateBlogAsync(BlogRequestDto blogRequestDto, string Creator, CancellationToken token);
 
     Task<Result<BlogPostResponseDto>> UpdateBlogAsync(BlogUpdateRequestDto blogUpdateRequestDto, CancellationToken token);
 }
