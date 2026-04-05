@@ -92,7 +92,7 @@ Which endpoints need Auth and Antiforgery?
 - ~~Data seeding (Admin User)~~
 - Tests
 - CI pipeline
-- Config / Environment - Validation
+- ~~Config / Environment - Validation~~
 - Logging
 
 ## TODO Phase 2
