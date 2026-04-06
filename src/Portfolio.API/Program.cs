@@ -11,6 +11,11 @@ using Portfolio.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Logging configuration - simple starter configuration using built-in providers.
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddOpenApi();
 
@@ -105,6 +110,27 @@ try
             options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API V1");
         });
     }
+    // Request logging middleware - logs start/finish for the request.
+    app.Use(async (context, next) =>
+    {
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        var method = context.Request.Method;
+        var path = context.Request.Path;
+        logger.LogInformation("Started {Method} {Path} CorrelationId:{TraceId}", method, path, context.TraceIdentifier);
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        try
+        {
+            await next();
+            sw.Stop();
+            logger.LogInformation("Finished {Method} {Path} {StatusCode} in {Elapsed}ms CorrelationId:{TraceId}", method, path, context.Response.StatusCode, sw.ElapsedMilliseconds, context.TraceIdentifier);
+        }
+        catch (Exception ex)
+        {
+            sw.Stop();
+            throw;
+        }
+    });
+
     app.UseExceptionHandler();
 
     app.UseHttpsRedirection();

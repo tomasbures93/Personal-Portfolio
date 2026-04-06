@@ -13,12 +13,12 @@
 
 ## Define the App Scope
 ### What the app does?  
-It will be personal Portfolio, to show my skills and programs I made
+It will be personal Portfolio, to show my skills and programs I have built.
 
 ### Main Features  
-- I can show projects I worked on
-- I show my skills and Tools I can use
-- I have Blog section
+- Showcase projects I have worked on
+- Display my skills and the tools I use
+- Include a blog section
 
 ### Phases
 - Phase 1
@@ -38,11 +38,11 @@ It will be personal Portfolio, to show my skills and programs I made
   - Deployment
 
 ## Frontend
-We will have couple of pages  
-- /Home - Whole page scrollable
-- /Projects - Extra page with all projects
+I will have couple of pages  
+- /Home - Classic Home page - Designing will be a challenge
+- /Projects - Separate page with all projects
 - /Blog - Blog posts
-- /Admin - Adminpanel (Auth needed)
+- /Admin - Adminpanel (authentication required)
   - /Admin/Projects - Manage Projects
   - /Admin/BlogPosts - Manage BlogPosts
   - /Admin/Technologies - Manage Technologies
@@ -73,6 +73,30 @@ We will have couple of pages
 ~~Every controller will need CRUD except WebsiteController this one will be only Update, 
 while it be created with default values while deploying~~
 
+### Logging
+Logging is important for monitoring and debugging.
+I will be using Serilog for logging (structured logs) and in future Phase 3 
+I will export logs to grafana/prometheus or seq.
+But I don´t want to log everything, we will log only important events like:
+- GlobalExceptionsHandler
+- Incoming Requests
+- Program.cs 
+  - Application start
+  - Configuration validation
+- Services 
+  - Website Service ( updates )
+  - Blog Service ( updates )
+- Security
+  - Login
+  - Logout
+  - Failed Login Attempts
+
+### Security
+- ASP.NET Identity for authentication and authorization.
+- HTTPS Cookie Authentication for authentication and CSRF Token Validation for security.
+- CORS configuration to allow frontend to communicate with backend.
+- Rate limiting for security and to prevent brute force attacks.
+
 ## Database
 ~~Database will be done over OR-Mapper - EntityFrameworkCore~~
 
@@ -97,17 +121,18 @@ Which endpoints need Auth and Antiforgery?
 
 ## TODO Phase 2
 - Pick a Frontend Framework
-- Plan Frontend
+- Plan the frontend
 - Backend CORS configuration
 - Code -> Enjoy -> Profit
-- Auth Testing
+- Authentication testing
 
 ## TODO Phase 3
 - Update docker-compose file
-- Setup Grafana 
-- Setup Program.cs to export Metrics/Traces/Logs
-- Test -> All good? -> Enjoy -> Profit
+- Set up Grafana 
+- Setup Program.cs to export metrics, traces, logs
+- Add rate Limiting
+- Test -> Is everything good? -> Enjoy -> Profit
 
 ## TODO Phase 4
-- Deployment to Hetzen -> burest.net
-- from CI to CI/CD with Github actions over SSH to Hetzner
+- Deploy to Hetzen -> burest.net
+- Upgrade from CI to CI/CD with GitHub Actions via SSH to Hetzner
