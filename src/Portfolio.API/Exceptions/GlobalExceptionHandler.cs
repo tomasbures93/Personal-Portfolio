@@ -6,10 +6,18 @@ namespace Portfolio.API.Exceptions;
 
 public sealed class GlobalExceptionHandler : IExceptionHandler
 {
-    // TODO: need to add logger
+    private readonly ILogger<GlobalExceptionHandler> _logger;
+
+    public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+    {
+        _logger = logger;
+    }
+
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         var path = httpContext.Request.Path.ToString();
+
+        _logger.LogError(exception, "Unhandled exception while processing request {Path} CorrelationId:{TraceId}", path, httpContext.TraceIdentifier);
 
         var problemDetails = exception switch
         {

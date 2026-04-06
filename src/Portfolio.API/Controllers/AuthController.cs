@@ -23,6 +23,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult> Login([FromBody] LoginRequestDto loginRequestDto, CancellationToken token)
     {
+        // TODO: ADD Logging Success/Failure Login Attempt
         var result = await _authService.LoginAsync(loginRequestDto, token);
         if(result.Errors.Any())
             return this.ReturnActionResult(result);

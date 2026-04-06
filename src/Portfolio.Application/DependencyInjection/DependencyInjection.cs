@@ -24,6 +24,7 @@ public static class DependencyInjection
     {
         services.AddScoped<ITechnologyService, TechnologyService>();
         services.AddScoped<IWebsiteService, WebsiteService>();
+        services.AddLogging();
         services.AddScoped<IBlogService, BlogService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IAuthService, AuthService>();

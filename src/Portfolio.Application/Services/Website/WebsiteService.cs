@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Portfolio.Application.Abstraction.Persistence;
 using Portfolio.Application.Abstraction.Services;
 using Portfolio.Application.Abstraction.Validator;
@@ -11,6 +12,7 @@ namespace Portfolio.Application.Services.Website;
 
 public class WebsiteService : IWebsiteService
 {
+    private readonly ILogger<WebsiteService> _logger;
     private readonly IWebsiteRepository _repository;
     private readonly ITechnologyRepository _technologyRepository;
     private readonly IValidate<ChangeNameRequestDto> _validateChangeName;
@@ -24,7 +26,8 @@ public class WebsiteService : IWebsiteService
         IValidate<ChangeNameRequestDto> validateChangeName,
         IValidate<ChangePasswordRequestDto> validateChangePassword,
         IValidate<WebsiteConfigUpdateRequestDto> validateConfigUpdate,
-        IPasswordHasher<WebsiteConfig> passwordHasher)
+        IPasswordHasher<WebsiteConfig> passwordHasher,
+        ILogger<WebsiteService> logger)
     {
         _repository = repository;
         _technologyRepository = technologyRepository;
@@ -32,10 +35,12 @@ public class WebsiteService : IWebsiteService
         _validateChangePassword = validateChangePassword;
         _validateConfigUpdate = validateConfigUpdate;
         _passwordHasher = passwordHasher;
+        _logger = logger;
     }
 
     public async Task<Result> ChangeNameAsync(ChangeNameRequestDto changeNameRequestDto, CancellationToken token)
     {
+        _logger.LogInformation("ChangeNameAsync called NewName:{NewName}", changeNameRequestDto.name);
         var validationResult = _validateChangeName.Validate(changeNameRequestDto);
         if (!validationResult.IsValid)
             return Result.Failure(ResultStatus.ValidationError, validationResult.Errors);
@@ -49,6 +54,7 @@ public class WebsiteService : IWebsiteService
 
     public async Task<Result> ChangePasswordAsync(ChangePasswordRequestDto changePasswordRequestDto, CancellationToken token)
     {
+        _logger.LogInformation("ChangePasswordAsync called");
         var validationResult = _validateChangePassword.Validate(changePasswordRequestDto);
         if (!validationResult.IsValid)
             return Result.Failure(ResultStatus.ValidationError, validationResult.Errors);
@@ -72,6 +78,7 @@ public class WebsiteService : IWebsiteService
 
     public async Task<Result<WebsiteConfigResponseDto>> GetWebsiteInfoAsync(CancellationToken token)
     {
+        _logger.LogInformation("GetWebsiteInfoAsync called");
         var config = await _repository.GetWebsiteInfoAsync(token);
         if (config == null)
             return Result<WebsiteConfigResponseDto>.Failure(ResultStatus.Error, "Critical Error! Website Config not found!");
@@ -89,6 +96,7 @@ public class WebsiteService : IWebsiteService
 
     public async Task<Result<WebsiteConfigResponseDto>> UpdateWebsiteConfig(WebsiteConfigUpdateRequestDto updateRequestDto, CancellationToken token)
     {
+        _logger.LogInformation("UpdateWebsiteConfig called Email:{Email} TechnologyCount:{Count}", updateRequestDto.email, updateRequestDto.technologies?.Count ?? 0);
         var validationResult = _validateConfigUpdate.Validate(updateRequestDto);
         if (!validationResult.IsValid)
             return Result<WebsiteConfigResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
