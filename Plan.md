@@ -93,6 +93,13 @@ But I don´t want to log everything, we will log only important events like:
   - ~~Logout~~
   - ~~Failed Login Attempts~~
 
+### Testing
+Testing is important to ensure the quality of the code and to catch bugs early.
+What do I want to test ?
+- Domain Layer ( Guard + Entities ) - Unit Tests
+- Application layer ( Services, Validators, Result ) - Unit Tests
+- Integration Tests
+
 ### Security
 - ASP.NET Identity for authentication and authorization.
 - HTTPS Cookie Authentication for authentication and CSRF Token Validation for security.
