@@ -14,19 +14,25 @@ namespace Portfolio.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, ILogger<AuthController> logger)
     {
         _authService = authService;
+        _logger = logger;
     }
 
     [HttpPost("login")]
     public async Task<ActionResult> Login([FromBody] LoginRequestDto loginRequestDto, CancellationToken token)
     {
-        // TODO: ADD Logging Success/Failure Login Attempt
+        _logger.LogInformation("Login request received for username: {UserName}", loginRequestDto.login);
+
         var result = await _authService.LoginAsync(loginRequestDto, token);
         if(result.Errors.Any())
+        {
+            _logger.LogWarning("Login failed for username: {UserName}. Status: {Status}", loginRequestDto.login, result.Status);
             return this.ReturnActionResult(result);
+        }
 
         var claims = new List<Claim>
         {
@@ -41,7 +47,22 @@ public class AuthController : ControllerBase
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
+        _logger.LogInformation("User {UserName} successfully signed in. CorrelationId:{TraceId}", result.Value.userName, HttpContext.TraceIdentifier);
+
         return this.ReturnActionResult(result);
+    }
+
+    [HttpPost("logout")]
+    public async Task<ActionResult> Logout(CancellationToken token)
+    {
+        var userName = User.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
+        _logger.LogInformation("Logout request received for user: {UserName}", userName);
+
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        _logger.LogInformation("User {UserName} successfully signed out. CorrelationId:{TraceId}", userName, HttpContext.TraceIdentifier);
+
+        return Ok(new { message = "Logged out successfully" });
     }
 
     [HttpGet("csrf-token")]

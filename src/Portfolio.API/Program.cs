@@ -12,9 +12,13 @@ using Portfolio.Infrastructure.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 // Logging configuration - simple starter configuration using built-in providers.
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
+var loggerFactory = LoggerFactory.Create(logger =>
+{
+    builder.Logging.ClearProviders();
+    builder.Logging.AddConsole();
+    builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
+});
+var startupLogger = loggerFactory.CreateLogger("Startup");
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddOpenApi();
@@ -24,7 +28,7 @@ builder.Services.AddOptions<PortfolioConfig>()
     .Bind(builder.Configuration.GetSection("PortfolioConfig"))
     .ValidateDataAnnotations()
     .Validate(x => !string.IsNullOrWhiteSpace(x.AdminUserName),
-        "PortfolioConfig:AdminUserEmail is required.")
+        "PortfolioConfig:AdminUserName is required.")
     .Validate(x => !string.IsNullOrWhiteSpace(x.AdminEmail),
         "PortfolioConfig:AdminEmail is required.")
     .Validate(x => !string.IsNullOrWhiteSpace(x.AdminPassword),
@@ -78,18 +82,22 @@ builder.Services.AddAntiforgery(options =>
 try
 {
     var app = builder.Build();
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("Application started. Environment: {Environment}", app.Environment.EnvironmentName);
 
     await using (var scope = app.Services.CreateAsyncScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var config = scope.ServiceProvider.GetRequiredService<IOptions<PortfolioConfig>>().Value;
 
+        logger.LogInformation("Initializing database and admin user");
         // TODO: Change it to migration
         await db.Database.EnsureDeletedAsync();
         await db.Database.EnsureCreatedAsync();
 
         if (!db.WebsiteConfig.Any())
         {
+            logger.LogInformation("No existing database found, creating default admin with default username:  {UserName}", config.AdminUserName);
             var passwordHasher = new PasswordHasher<WebsiteConfig>();
             var websiteConfig = new WebsiteConfig();
 
@@ -99,6 +107,11 @@ try
 
             await db.WebsiteConfig.AddAsync(websiteConfig);
             await db.SaveChangesAsync();
+            logger.LogInformation("Default admin user created successfully");
+        }
+        else
+        {
+            logger.LogInformation("Database already initialized, skipping admin user creation");
         }
     }
 
@@ -110,6 +123,7 @@ try
             options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API V1");
         });
     }
+
     // Request logging middleware - logs start/finish for the request.
     app.Use(async (context, next) =>
     {
@@ -142,21 +156,16 @@ try
 
     app.MapControllers();
 
+    logger.LogInformation("Application configured successfully, starting the app");
     app.Run();
 } 
 catch ( OptionsValidationException ex)
 {
-    //TODO : Propper logging 
-    Console.WriteLine("Configuration validation failed:");
-    foreach (var failure in ex.Failures)
-    {
-        Console.WriteLine($"- {failure}");
-    }
+    startupLogger.LogCritical("Configuration validation failed: {Failures}", string.Join(", ", ex.Failures));
     throw;
 }
 catch (Exception ex)
 {
-    //TODO : Propper logging 
-    Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+    startupLogger.LogError(ex, "An unexpected error occurred during application startup: {Message}", ex.Message);
     throw;
 }

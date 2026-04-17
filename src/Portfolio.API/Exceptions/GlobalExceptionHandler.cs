@@ -16,8 +16,16 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         var path = httpContext.Request.Path.ToString();
+        var method = httpContext.Request.Method;
 
-        _logger.LogError(exception, "Unhandled exception while processing request {Path} CorrelationId:{TraceId}", path, httpContext.TraceIdentifier);
+        if (exception is DomainException domainEx)
+        {
+            _logger.LogWarning(domainEx, "Domain exception while processing {Method} {Path} CorrelationId:{TraceId}", method, path, httpContext.TraceIdentifier);
+        }
+        else
+        {
+            _logger.LogError(exception, "Unhandled exception while processing {Method} {Path} CorrelationId:{TraceId}", method, path, httpContext.TraceIdentifier);
+        }
 
         var problemDetails = exception switch
         {

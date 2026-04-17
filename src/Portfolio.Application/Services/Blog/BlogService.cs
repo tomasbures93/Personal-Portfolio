@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Portfolio.Application.Abstraction.Persistence;
 using Portfolio.Application.Abstraction.Services;
 using Portfolio.Application.Abstraction.Validator;
@@ -15,17 +16,20 @@ public sealed class BlogService : IBlogService
     private readonly IValidate<int> _validateID;
     private readonly IValidate<BlogRequestDto> _validateBlogCreateRequest;
     private readonly IValidate<BlogUpdateRequestDto> _validateBlogUpdateRequest;
+    private readonly ILogger<BlogService> _logger;
 
     public BlogService(
         IBlogRepository repository, 
         IValidate<int> validateID,
         IValidate<BlogRequestDto> validateBlogCreateRequest,
-        IValidate<BlogUpdateRequestDto> validateBlogUpdateRequest)
+        IValidate<BlogUpdateRequestDto> validateBlogUpdateRequest,
+        ILogger<BlogService> logger)
     {
         _repository = repository;
         _validateID = validateID;
         _validateBlogCreateRequest = validateBlogCreateRequest;
         _validateBlogUpdateRequest = validateBlogUpdateRequest;
+        _logger = logger;
     }
 
     public async Task<Result<BlogPostResponseDto>> CreateBlogAsync(BlogRequestDto blogRequestDto, string creator, CancellationToken token)
@@ -50,14 +54,23 @@ public sealed class BlogService : IBlogService
 
     public async Task<Result> DeleteBlogAsync(int blogId, CancellationToken token)
     {
+        _logger.LogInformation("Deleting blog post. BlogId: {BlogId}", blogId);
+
         var validationResult = _validateID.Validate(blogId);
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Blog deletion validation failed. BlogId: {BlogId}. Errors: {Errors}", blogId, string.Join(", ", validationResult.Errors));
             return Result.Failure(ResultStatus.ValidationError, validationResult.Errors);
+        }
 
         var result = await _repository.DeleteBlogAsync(blogId, token);
         if (!result)
+        {
+            _logger.LogWarning("Blog post not found for deletion. BlogId: {BlogId}", blogId);
             return Result.Failure(ResultStatus.NotFound, "BlogPost not found");
+        }
 
+        _logger.LogInformation("Blog post deleted successfully. BlogId: {BlogId}", blogId);
         return Result.Ok();
     }
 
@@ -102,9 +115,14 @@ public sealed class BlogService : IBlogService
 
     public async Task<Result<BlogPostResponseDto>> UpdateBlogAsync(BlogUpdateRequestDto blogUpdateRequestDto, CancellationToken token)
     {
+        _logger.LogInformation("Updating blog post. BlogId: {BlogId}, Title: {Title}", blogUpdateRequestDto.id, blogUpdateRequestDto.title);
+
         var validationResult = _validateBlogUpdateRequest.Validate(blogUpdateRequestDto);
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Blog update validation failed. BlogId: {BlogId}. Errors: {Errors}", blogUpdateRequestDto.id, string.Join(", ", validationResult.Errors));
             return Result<BlogPostResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
+        }
 
         var blogModel = new BlogPost(
             blogUpdateRequestDto.id,
@@ -113,7 +131,12 @@ public sealed class BlogService : IBlogService
             blogUpdateRequestDto.draft);
         var blog = await _repository.UpdateBlogAsync(blogModel, token);
         if (blog == null)
+        {
+            _logger.LogWarning("Blog post not found for update. BlogId: {BlogId}", blogUpdateRequestDto.id);
             return Result<BlogPostResponseDto>.Failure(ResultStatus.NotFound, "Blog was not found.");
+        }
+
+        _logger.LogInformation("Blog post updated successfully. BlogId: {BlogId}, Title: {Title}", blog.Id, blog.Title);
 
         var blogDto = new BlogPostResponseDto(
             blog.Id,
@@ -123,7 +146,7 @@ public sealed class BlogService : IBlogService
             blog.UpdatedAt,
             blog.Draft,
             blog.Creator);
-        
+
         return Result<BlogPostResponseDto>.Ok(blogDto);
     }
 }
