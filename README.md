@@ -19,9 +19,10 @@ The project is currently in Phase 1.
 - Authentication and authorization with ASP.NET Identity
 - HTTPS cookie authentication
 - CSRF token protection
+- Logging
 
 ### Implementing next step
-- Logging
+- Tests
 
 ## Tech Stack
 
@@ -39,7 +40,8 @@ The project is currently in Phase 1.
 ## Roadmap
 
 ### Phase 1
-- Logging
+- Tests
+- Github Actions - CI
 
 ### Phase 2
 - Choose a frontend framework
