@@ -50,8 +50,7 @@ public sealed class WebsiteRepository : IWebsiteRepository
         if (websiteConfig == null)
             return null;
 
-        websiteConfig.ChangeEmail(newEmail);
-        websiteConfig.UpdateTechnologies(technologies);
+        websiteConfig.UpdateProfil(newEmail, technologies);
 
         await _dbContext.SaveChangesAsync(token);
 

@@ -4,17 +4,20 @@ namespace Portfolio.Domain.Entities;
 
 public sealed class Project
 {
-    public int Id { get; set; }
+    public int Id { get; private set; }
 
-    public string Title { get; set; }
+    public string Title { get; private set; }
+     
+    public string Description { get; private set; }
 
-    public string Description { get; set; }
+    public string? Url { get; private set; }
 
-    public string? Url { get; set; }
 
-    public ICollection<Technology> Technologies { get; set; } = new List<Technology>();
+    private readonly List<Technology> _technologies = new();
 
-    public Project() { }
+    public IReadOnlyCollection<Technology> Technologies => _technologies.AsReadOnly();
+
+    private Project() { }
 
     public Project(string title, string description, List<Technology> technologies, string? url = null)
     {
@@ -34,32 +37,36 @@ public sealed class Project
         UpdateUrl(url);
     }
 
-    public void UpdateTitle(string title)
+    public void Update(string title, string description, List<Technology> technologies, string? url = null)
+    {
+        UpdateTitle(title);
+        UpdateDescription(description);
+        UpdateTechnologies(technologies);
+        UpdateUrl(url);
+    }
+
+    private void UpdateTitle(string title)
     {
         Guard.AgainstNullOrWhiteSpace(title, nameof(title));
         Title = title.Trim();
     }
 
-    public void UpdateDescription(string description)
+    private void UpdateDescription(string description)
     {
         Guard.AgainstNullOrWhiteSpace(description, nameof(description));
         Description = description.Trim();
     }
 
-    public void UpdateTechnologies(List<Technology> technologies)
+    private void UpdateTechnologies(IEnumerable<Technology> technologies)
     {
-        Guard.TechnologiesAreNotEmpty(technologies, nameof(technologies));
-        Technologies.Clear();
-
-        foreach(var technology in technologies)
-        {
-            Technologies.Add(technology); 
-        }
+        var items = technologies.ToList();
+        Guard.TechnologiesAreNotEmpty(items, nameof(technologies));
+        _technologies.Clear();
+        _technologies.AddRange(technologies);
     }
 
-    public void UpdateUrl(string? url)
+    private void UpdateUrl(string? url)
     {
-        if (url == null) return;
-        Url = url.Trim();
+        Url = string.IsNullOrWhiteSpace(url) ? null : url.Trim();   
     }
 }

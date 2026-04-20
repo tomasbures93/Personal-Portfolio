@@ -99,10 +99,7 @@ try
         {
             logger.LogInformation("No existing database found, creating default admin with default username:  {UserName}", config.AdminUserName);
             var passwordHasher = new PasswordHasher<WebsiteConfig>();
-            var websiteConfig = new WebsiteConfig();
-
-            websiteConfig.ChangeUserName(config.AdminUserName);
-            websiteConfig.ChangeEmail(config.AdminEmail);
+            var websiteConfig = new WebsiteConfig(config.AdminUserName, config.AdminEmail);
             websiteConfig.UpdatePasswordHash(passwordHasher.HashPassword(websiteConfig, config.AdminPassword));
 
             await db.WebsiteConfig.AddAsync(websiteConfig);

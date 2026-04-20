@@ -49,10 +49,7 @@ public sealed class BlogRepository : IBlogRepository
         if (existingBlog == null)
             return null;
 
-        existingBlog.UpdateTitle(blogPost.Title);
-        existingBlog.UpdateContent(blogPost.Content);
-        existingBlog.SetUpdatedAt();
-        existingBlog.UpdateDraft(blogPost.Draft);
+        existingBlog.Update(blogPost.Title, blogPost.Content, blogPost.Draft);
 
         await _dbContext.SaveChangesAsync(token);
 

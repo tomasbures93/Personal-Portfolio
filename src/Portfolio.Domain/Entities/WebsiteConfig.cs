@@ -4,7 +4,7 @@ namespace Portfolio.Domain.Entities;
 
 public sealed class WebsiteConfig
 {
-    public int Id { get; init; }
+    public int Id { get; private set; }
 
     public string Email { get; private set; }
 
@@ -12,32 +12,43 @@ public sealed class WebsiteConfig
 
     public string PasswordHash { get; private set; }
 
-    // TODO: There is better approach to handle this => IReadOnlyCollection to protect the collection from outside!!
-    public ICollection<Technology>? Technologies { get; set; } = new List<Technology>();
 
-    public WebsiteConfig() { }
+    private readonly List<Technology> _technologies = new();
+
+    public IReadOnlyCollection<Technology> Technologies => _technologies.AsReadOnly();
+
+    private WebsiteConfig() { }
+
+    public WebsiteConfig(string userName, string email)
+    {
+        ChangeUserName(userName);
+        ChangeEmail(email);
+    }
+
+    public void UpdateProfil(string email, IEnumerable<Technology> technologies)
+    {
+        ChangeEmail(email);
+        UpdateTechnologies(technologies);
+    }
 
     public void ChangeUserName(string userName)
     {
         Guard.AgainstNullOrWhiteSpace(userName, nameof(userName));
-        UserName = userName;
+        UserName = userName.Trim();
     }
 
     public void ChangeEmail(string email)
     {
         Guard.AgainstNullOrWhiteSpace(email, nameof(email));
-        Email = email;
+        Email = email.Trim();
     }
 
-    public void UpdateTechnologies(List<Technology> technologies)
+    private void UpdateTechnologies(IEnumerable<Technology> technologies)
     {
-        Guard.TechnologiesAreNotEmpty(technologies, nameof(technologies));
-        Technologies.Clear();
-
-        foreach(var technology in technologies)
-        {
-            Technologies.Add(technology);
-        }
+        var items = technologies.ToList();
+        Guard.TechnologiesAreNotEmpty(items, nameof(technologies));
+        _technologies.Clear();
+        _technologies.AddRange(technologies);
     }
 
     public void UpdatePasswordHash(string newHash)

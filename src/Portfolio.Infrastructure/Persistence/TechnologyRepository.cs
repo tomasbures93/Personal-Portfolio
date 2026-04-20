@@ -49,8 +49,7 @@ public sealed class TechnologyRepository : ITechnologyRepository
         if (existingTechnology is null)
             return null;
 
-        existingTechnology.UpdateName(technology.Name);
-        existingTechnology.UpdateCategory(technology.Category);
+        existingTechnology.Update(technology.Name, technology.Category);
 
         await _dbContext.SaveChangesAsync(token);
 
