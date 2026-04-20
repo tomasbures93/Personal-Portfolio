@@ -4,28 +4,28 @@ namespace Portfolio.Domain.Entities;
 
 public sealed class BlogPost
 {
-    public int Id { get; set; }
+    public int Id { get; private set; }
 
-    public string Title { get; set; }
+    public string Title { get; private set; }
 
-    public string Content { get; set; }
+    public string Content { get; private set; }
 
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; private set; }
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; private set; }
 
-    public bool Draft { get; set; }
+    public bool Draft { get; private set; }
 
-    public string Creator { get; set; }
+    public string Creator { get; private set; }
 
-    public BlogPost() { }
+    private BlogPost() { }
 
     public BlogPost(string title, string content, bool draft, string creator)
     {
-        UpdateTitle(title);
-        UpdateContent(content);
-        UpdateDraft(draft);
-        UpdateCreator(creator);
+        SetTitle(title);
+        SetContent(content);
+        Draft = draft;
+        SetCreator(creator);
         CreatedAt = DateTime.UtcNow;
     }
 
@@ -33,36 +33,34 @@ public sealed class BlogPost
     {
         Guard.ValidId(id, nameof(id));
         Id = id;
-        UpdateTitle(title);
-        UpdateContent(content);
-        UpdateDraft(draft);
+        SetTitle(title);
+        SetContent(content);
+        Draft = draft;
     }
 
-    public void UpdateTitle(string title)
+    public void Update(string title, string content, bool draft)
+    {
+        SetTitle(title);
+        SetContent(content);
+        Draft = draft;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    private void SetTitle(string title)
     {
         Guard.AgainstNullOrWhiteSpace(title, nameof(title));
         Title = title.Trim();
     }
 
-    public void UpdateContent(string content)
+    private void SetContent(string content)
     {
         Guard.AgainstNullOrWhiteSpace(content, nameof(content));
         Content = content.Trim();
     }
 
-    public void UpdateCreator(string creator)
+    private void SetCreator(string creator)
     {
         Guard.AgainstNullOrWhiteSpace(creator, nameof(creator));
-        Creator = creator;
-    }
-
-    public void UpdateDraft(bool draft)
-    {
-        Draft = draft;
-    }
-
-    public void SetUpdatedAt()
-    {
-        UpdatedAt = DateTime.UtcNow;
+        Creator = creator.Trim();
     }
 }

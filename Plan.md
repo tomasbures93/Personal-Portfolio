@@ -27,7 +27,9 @@ It will be personal Portfolio, to show my skills and programs I have built.
   - ~~I can add Projects~~
   - ~~I can add BlogPosts~~
   - ~~I can manage WebsiteConfig~~
-  - Logging
+  - ~~Logging~~
+  - Test
+  - CI/CD
 - Phase 2
   - Frontend is done
   - User can contact me via Email
@@ -78,18 +80,25 @@ Logging is important for monitoring and debugging.
 I will be using Serilog for logging (structured logs) and in future Phase 3 
 I will export logs to grafana/prometheus or seq.
 But I don´t want to log everything, we will log only important events like:
-- GlobalExceptionsHandler
-- Incoming Requests
-- Program.cs 
-  - Application start
-  - Configuration validation
-- Services 
-  - Website Service ( updates )
-  - Blog Service ( updates )
-- Security
-  - Login
-  - Logout
-  - Failed Login Attempts
+- ~~GlobalExceptionsHandler~~
+- ~~Incoming Requests~~
+- ~~Program.cs~~ 
+  - ~~Application start~~
+  - ~~Configuration validation~~
+- ~~Services~~
+  - ~~Website Service ( updates )~~
+  - ~~Blog Service ( updates )~~
+- ~~Auth~~
+  - ~~Login~~
+  - ~~Logout~~
+  - ~~Failed Login Attempts~~
+
+### Testing
+Testing is important to ensure the quality of the code and to catch bugs early.
+What do I want to test ?
+- Domain Layer ( Guard + Entities ) - Unit Tests
+- Application layer ( Services, Validators, Result ) - Unit Tests
+- Integration Tests
 
 ### Security
 - ASP.NET Identity for authentication and authorization.
@@ -117,7 +126,8 @@ Which endpoints need Auth and Antiforgery?
 - Tests
 - CI pipeline
 - ~~Config / Environment - Validation~~
-- Logging
+- ~~Logging~~
+- Migrationen
 
 ## TODO Phase 2
 - Pick a Frontend Framework

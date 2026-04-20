@@ -52,10 +52,7 @@ public sealed class ProjectRepository : IProjectRepository
         if (existingProject == null)
             return null;
 
-        existingProject.UpdateTitle(project.Title);
-        existingProject.UpdateDescription(project.Description);
-        existingProject.UpdateUrl(project.Url);
-        existingProject.UpdateTechnologies(project.Technologies.ToList());
+        existingProject.Update(project.Title, project.Description, project.Technologies.ToList(), project.Url);
 
         await _dbContext.SaveChangesAsync();
 

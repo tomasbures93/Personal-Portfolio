@@ -17,7 +17,7 @@ public class Technology
 
     public WebsiteConfig? WebsiteConfig { get; set; }
 
-    protected Technology() { }
+    private Technology() { }
 
     public Technology(string name, TechnologyCategory category)
     {
@@ -33,13 +33,19 @@ public class Technology
         UpdateCategory(category);
     }
 
-    public void UpdateName(string name)
+    public void Update(string name, TechnologyCategory category)
+    {
+        UpdateName(name);
+        UpdateCategory(category);
+    }
+
+    private void UpdateName(string name)
     {
         Guard.AgainstNullOrWhiteSpace(name, nameof(name));
         Name = name.Trim();
     }
 
-    public void UpdateCategory(TechnologyCategory category) 
+    private void UpdateCategory(TechnologyCategory category) 
     {
         Guard.EnumValueExists(category, nameof(category));
         Category = category;
