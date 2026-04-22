@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Portfolio.Application.Abstraction.Persistence;
 using Portfolio.Application.Abstraction.Services;
 using Portfolio.Application.Abstraction.Validator;
@@ -38,7 +37,7 @@ public sealed class BlogService : IBlogService
         if (!validationResult.IsValid)
             return Result<BlogPostResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
 
-        var blogModel = new BlogPost(blogRequestDto.title, blogRequestDto.content, blogRequestDto.draft, creator);
+        var blogModel = new BlogPost(blogRequestDto.Title, blogRequestDto.Content, blogRequestDto.Draft, creator);
         var blog = await _repository.CreateBlogAsync(blogModel, token);
 
         var blogDto = new BlogPostResponseDto(
@@ -108,31 +107,31 @@ public sealed class BlogService : IBlogService
                 b.UpdatedAt, 
                 b.Draft, 
                 b.Creator))
-            .OrderBy(d => d.id)
+            .OrderBy(d => d.Id)
             .ToList();
         return Result<List<BlogPostResponseDto>>.Ok(blogsDto);
     }
 
     public async Task<Result<BlogPostResponseDto>> UpdateBlogAsync(BlogUpdateRequestDto blogUpdateRequestDto, CancellationToken token)
     {
-        _logger.LogInformation("Updating blog post. BlogId: {BlogId}, Title: {Title}", blogUpdateRequestDto.id, blogUpdateRequestDto.title);
+        _logger.LogInformation("Updating blog post. BlogId: {BlogId}, Title: {Title}", blogUpdateRequestDto.Id, blogUpdateRequestDto.Title);
 
         var validationResult = _validateBlogUpdateRequest.Validate(blogUpdateRequestDto);
         if (!validationResult.IsValid)
         {
-            _logger.LogWarning("Blog update validation failed. BlogId: {BlogId}. Errors: {Errors}", blogUpdateRequestDto.id, string.Join(", ", validationResult.Errors));
+            _logger.LogWarning("Blog update validation failed. BlogId: {BlogId}. Errors: {Errors}", blogUpdateRequestDto.Id, string.Join(", ", validationResult.Errors));
             return Result<BlogPostResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
         }
 
         var blogModel = new BlogPost(
-            blogUpdateRequestDto.id,
-            blogUpdateRequestDto.title,
-            blogUpdateRequestDto.content,
-            blogUpdateRequestDto.draft);
+            blogUpdateRequestDto.Id,
+            blogUpdateRequestDto.Title,
+            blogUpdateRequestDto.Content,
+            blogUpdateRequestDto.Draft);
         var blog = await _repository.UpdateBlogAsync(blogModel, token);
         if (blog == null)
         {
-            _logger.LogWarning("Blog post not found for update. BlogId: {BlogId}", blogUpdateRequestDto.id);
+            _logger.LogWarning("Blog post not found for update. BlogId: {BlogId}", blogUpdateRequestDto.Id);
             return Result<BlogPostResponseDto>.Failure(ResultStatus.NotFound, "Blog was not found.");
         }
 

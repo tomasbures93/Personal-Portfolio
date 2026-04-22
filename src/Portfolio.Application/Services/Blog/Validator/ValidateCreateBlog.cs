@@ -10,10 +10,10 @@ public class ValidateCreateBlog : IValidate<BlogRequestDto>
     {
         var result = new ValidationResult();
 
-        if (string.IsNullOrWhiteSpace(model.title))
+        if (string.IsNullOrWhiteSpace(model.Title))
             result.Errors.Add("Title is missing.");
 
-        if (string.IsNullOrWhiteSpace(model.content))
+        if (string.IsNullOrWhiteSpace(model.Content))
             result.Errors.Add("Content is missing.");
 
         return result;

@@ -7,7 +7,7 @@ using Portfolio.Application.DTO.Response;
 
 namespace Portfolio.Application.Services.Technology;
 
-public class TechnologyService : ITechnologyService
+public sealed class TechnologyService : ITechnologyService
 {
     private readonly ITechnologyRepository _technologyRepository;
     private readonly IValidate<int> _validateID;
@@ -33,8 +33,8 @@ public class TechnologyService : ITechnologyService
             return Result<TechnologyResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
 
         var technologyModel = new Portfolio.Domain.Entities.Technology(
-            technologyCreateRequestDto.name, 
-            technologyCreateRequestDto.category);
+            technologyCreateRequestDto.Name, 
+            technologyCreateRequestDto.Category);
 
         var technology = await _technologyRepository.CreateTechnologyAsync(technologyModel, token);
 
@@ -60,7 +60,7 @@ public class TechnologyService : ITechnologyService
         var technologies = await _technologyRepository.GetTechnologiesAsync(token);
 
         var technologiesDto = technologies.Select(t => new TechnologyResponseDto(t.Id, t.Name, t.Category))
-            .OrderBy(t => t.id).ToList();
+            .OrderBy(t => t.Id).ToList();
         return Result<List<TechnologyResponseDto>>.Ok(technologiesDto);
     }
 
@@ -86,9 +86,9 @@ public class TechnologyService : ITechnologyService
             return Result<TechnologyResponseDto>.Failure(ResultStatus.ValidationError, validationResult.Errors);
 
         var technologyModel = new Portfolio.Domain.Entities.Technology(
-            technologyUpdateRequestDto.id, 
-            technologyUpdateRequestDto.name, 
-            technologyUpdateRequestDto.category);
+            technologyUpdateRequestDto.Id, 
+            technologyUpdateRequestDto.Name, 
+            technologyUpdateRequestDto.Category);
         var technology = await _technologyRepository.UpdateTechnologyAsync(technologyModel, token);
         if (technology == null)
             return Result<TechnologyResponseDto>.Failure(ResultStatus.NotFound, "Technology not found");

@@ -11,10 +11,10 @@ public class ValidateCreateTechnology : IValidate<TechnologyRequestDto>
     {
         var result = new ValidationResult();
 
-        if (string.IsNullOrWhiteSpace(model.name))
+        if (string.IsNullOrWhiteSpace(model.Name))
             result.Errors.Add("Technology Name is missing.");
 
-        if (!Enum.IsDefined(typeof(TechnologyCategory), model.category))
+        if (!Enum.IsDefined(typeof(TechnologyCategory), model.Category))
             result.Errors.Add("Wrong Technology category.");
 
         return result;

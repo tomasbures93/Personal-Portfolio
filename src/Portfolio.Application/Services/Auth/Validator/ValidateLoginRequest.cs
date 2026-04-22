@@ -10,12 +10,12 @@ public class ValidateLoginRequest : IValidate<LoginRequestDto>
     {
         var result = new ValidationResult();
 
-        if(string.IsNullOrWhiteSpace(model.login))
+        if(string.IsNullOrWhiteSpace(model.Login))
         {
             result.Errors.Add("Login is required.");
         }
 
-        if(string.IsNullOrWhiteSpace(model.password))
+        if(string.IsNullOrWhiteSpace(model.Password))
         {
             result.Errors.Add("Password is required.");
         }

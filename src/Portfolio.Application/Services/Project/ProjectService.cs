@@ -39,15 +39,15 @@ public sealed class ProjectService : IProjectService
         if (technologies == null || !technologies.Any())
             return Result<ProjectResponseDto>.Failure(ResultStatus.Error, "No technologies found in DB");
 
-        var technologiesToAdd = technologies.Where(i => projectRequestDto.technologies.Contains(i.Id)).ToList();
+        var technologiesToAdd = technologies.Where(i => projectRequestDto.Technologies.Contains(i.Id)).ToList();
         if(technologiesToAdd == null || !technologiesToAdd.Any())
             return Result<ProjectResponseDto>.Failure(ResultStatus.Error, "You are trying to add Technologies which are not in DB, create those technologies first");
 
         var projectModel = new Portfolio.Domain.Entities.Project(
-            projectRequestDto.title,
-            projectRequestDto.description,
+            projectRequestDto.Title,
+            projectRequestDto.Description,
             technologiesToAdd,
-            projectRequestDto.url);
+            projectRequestDto.Url);
         var project = await _projectRepository.CreateProjectAsync(projectModel, token);
 
         var projectDto = new ProjectResponseDto(
@@ -127,16 +127,16 @@ public sealed class ProjectService : IProjectService
         if (technologies == null || !technologies.Any())
             return Result<ProjectResponseDto>.Failure(ResultStatus.Error, "No technologies found in DB");
 
-        var technologiesToUpdate = technologies.Where(i => projectUpdateRequestDto.technologies.Contains(i.Id)).ToList();
+        var technologiesToUpdate = technologies.Where(i => projectUpdateRequestDto.Technologies.Contains(i.Id)).ToList();
         if (technologiesToUpdate == null || !technologiesToUpdate.Any())
             return Result<ProjectResponseDto>.Failure(ResultStatus.Error, "No technologies found in DB, add some first and try again");
 
         var projectModel = new Portfolio.Domain.Entities.Project(
-            projectUpdateRequestDto.id,
-            projectUpdateRequestDto.title,
-            projectUpdateRequestDto.description,
+            projectUpdateRequestDto.Id,
+            projectUpdateRequestDto.Title,
+            projectUpdateRequestDto.Description,
             technologiesToUpdate,
-            projectUpdateRequestDto.url);
+            projectUpdateRequestDto.Url);
         var project = await _projectRepository.UpdateProjectAsync(projectModel, token);
         if (project == null)
             return Result<ProjectResponseDto>.Failure(ResultStatus.NotFound, "Project not found");

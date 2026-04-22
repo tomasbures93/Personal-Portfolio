@@ -8,6 +8,7 @@ using Portfolio.Application.DependencyInjection;
 using Portfolio.Domain.Entities;
 using Portfolio.Infrastructure.DependencyInjection;
 using Portfolio.Infrastructure.Persistence;
+using Portfolio.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,10 +99,15 @@ try
         if (!db.WebsiteConfig.Any())
         {
             logger.LogInformation("No existing database found, creating default admin with default username:  {UserName}", config.AdminUserName);
-            var passwordHasher = new PasswordHasher<WebsiteConfig>();
+            var passwordHasher = new AspNetPasswordHasher();
             var websiteConfig = new WebsiteConfig(config.AdminUserName, config.AdminEmail);
-            websiteConfig.UpdatePasswordHash(passwordHasher.HashPassword(websiteConfig, config.AdminPassword));
-
+            var hashedPassword = passwordHasher.HashPassword(config.AdminPassword);
+            if(!hashedPassword.IsSuccess)
+            {
+                logger.LogError("Failed to hash admin password during initialization. Reason: {Reason}", hashedPassword.Errors);
+                throw new Exception("Failed to hash admin password during initialization.");
+            }
+            websiteConfig.UpdatePasswordHash(hashedPassword.Value);
             await db.WebsiteConfig.AddAsync(websiteConfig);
             await db.SaveChangesAsync();
             logger.LogInformation("Default admin user created successfully");

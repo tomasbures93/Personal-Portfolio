@@ -11,13 +11,13 @@ public class ValidateUpdateTechnology : IValidate<TechnologyUpdateRequestDto>
     {
         var result = new ValidationResult();
 
-        if (model.id <= 0)
+        if (model.Id <= 0)
             result.Errors.Add("Wrong ID, ID has to be greater then 0.");
 
-        if (string.IsNullOrWhiteSpace(model.name))
+        if (string.IsNullOrWhiteSpace(model.Name))
             result.Errors.Add("Technology Name is missing.");
 
-        if (!Enum.IsDefined(typeof(TechnologyCategory), model.category))
+        if (!Enum.IsDefined(typeof(TechnologyCategory), model.Category))
             result.Errors.Add("Wrong Technology category.");
 
         return result;
