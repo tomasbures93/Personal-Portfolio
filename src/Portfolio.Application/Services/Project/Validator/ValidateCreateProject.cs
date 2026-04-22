@@ -10,13 +10,13 @@ public class ValidateCreateProject : IValidate<ProjectRequestDto>
     {
         var result = new ValidationResult();
 
-        if (string.IsNullOrWhiteSpace(model.title))
+        if (string.IsNullOrWhiteSpace(model.Title))
             result.Errors.Add("Title is missing.");
 
-        if (string.IsNullOrWhiteSpace(model.description))
+        if (string.IsNullOrWhiteSpace(model.Description))
             result.Errors.Add("Descriptions are missing.");
 
-        if (!model.technologies.Any())
+        if (!model.Technologies.Any())
             result.Errors.Add("Technologies are missing.");
 
         return result;

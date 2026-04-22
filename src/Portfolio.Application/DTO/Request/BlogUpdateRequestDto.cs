@@ -1,7 +1,7 @@
 ﻿namespace Portfolio.Application.DTO.Request;
 
 public sealed record BlogUpdateRequestDto(
-    int id,
-    string title,
-    string content,
-    bool draft);
+    int Id,
+    string Title,
+    string Content,
+    bool Draft);

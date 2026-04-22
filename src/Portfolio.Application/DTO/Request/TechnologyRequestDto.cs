@@ -2,5 +2,5 @@
 
 namespace Portfolio.Application.DTO.Request;
 
-public sealed record TechnologyRequestDto(string name, TechnologyCategory category);
+public sealed record TechnologyRequestDto(string Name, TechnologyCategory Category);
 

@@ -25,19 +25,21 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult> Login([FromBody] LoginRequestDto loginRequestDto, CancellationToken token)
     {
-        _logger.LogInformation("Login request received for username: {UserName}", loginRequestDto.login);
+        _logger.LogInformation("Login request received for username: {UserName}", loginRequestDto.Login);
 
         var result = await _authService.LoginAsync(loginRequestDto, token);
         if(result.Errors.Any())
         {
-            _logger.LogWarning("Login failed for username: {UserName}. Status: {Status}", loginRequestDto.login, result.Status);
+            _logger.LogWarning("Login failed for username: {UserName}. Status: {Status}", loginRequestDto.Login, result.Status);
             return this.ReturnActionResult(result);
         }
 
+        // TODO : Abstract claims creation to a separate service
+
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, result.Value.userName),
-            new Claim(ClaimTypes.Email, result.Value.email),
+            new Claim(ClaimTypes.Name, result.Value.UserName),
+            new Claim(ClaimTypes.Email, result.Value.Email),
             new Claim(ClaimTypes.Role, "Admin")
         };
 
@@ -47,7 +49,7 @@ public class AuthController : ControllerBase
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-        _logger.LogInformation("User {UserName} successfully signed in. CorrelationId:{TraceId}", result.Value.userName, HttpContext.TraceIdentifier);
+        _logger.LogInformation("User {UserName} successfully signed in. CorrelationId:{TraceId}", result.Value.UserName, HttpContext.TraceIdentifier);
 
         return this.ReturnActionResult(result);
     }

@@ -16,7 +16,7 @@ public sealed class ProjectRepository : IProjectRepository
     public async Task<Project> CreateProjectAsync(Project project, CancellationToken token)
     {
         await _dbContext.Projects.AddAsync(project, token);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(token);
 
         return project;
     }
@@ -28,7 +28,7 @@ public sealed class ProjectRepository : IProjectRepository
             return false;
 
         _dbContext.Projects.Remove(project);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(token);
 
         return true;
     }
@@ -54,7 +54,7 @@ public sealed class ProjectRepository : IProjectRepository
 
         existingProject.Update(project.Title, project.Description, project.Technologies.ToList(), project.Url);
 
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(token);
 
         return existingProject;
     }

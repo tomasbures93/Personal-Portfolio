@@ -3,6 +3,6 @@
 namespace Portfolio.Application.DTO.Response;
 
 public sealed record TechnologyResponseDto(
-    int id, 
-    string name, 
-    TechnologyCategory category);
+    int Id, 
+    string Name, 
+    TechnologyCategory Category);   

@@ -1,3 +1,3 @@
 ﻿namespace Portfolio.Application.DTO.Request;
 
-public sealed record LoginRequestDto(string login, string password);
+public sealed record LoginRequestDto(string Login, string Password);

@@ -10,16 +10,16 @@ public class ValidateUpdateProject : IValidate<ProjectUpdateRequestDto>
     {
         var result = new ValidationResult();
 
-        if (model.id <= 0)
+        if (model.Id <= 0)
             result.Errors.Add("Wrong ID, ID has to be greater then 0.");
 
-        if (string.IsNullOrWhiteSpace(model.title))
+        if (string.IsNullOrWhiteSpace(model.Title))
             result.Errors.Add("Title is missing.");
 
-        if (string.IsNullOrWhiteSpace(model.description))
+        if (string.IsNullOrWhiteSpace(model.Description))
             result.Errors.Add("Descriptions are missing.");
 
-        if (!model.technologies.Any())
+        if (!model.Technologies.Any())
             result.Errors.Add("Technologies are missing.");
 
         return result;
