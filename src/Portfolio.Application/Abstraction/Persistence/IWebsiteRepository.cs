@@ -2,6 +2,8 @@
 
 namespace Portfolio.Application.Abstraction.Persistence;
 
+// TODO : Refactor this to better naming
+
 public interface IWebsiteRepository
 {
     Task<WebsiteConfig?> GetWebsiteInfoAsync(CancellationToken token);
