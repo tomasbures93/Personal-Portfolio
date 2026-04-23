@@ -1,4 +1,5 @@
-﻿using Portfolio.Application.Abstraction.Persistence;
+﻿using Portfolio.Application.Abstraction.Mapper;
+using Portfolio.Application.Abstraction.Persistence;
 using Portfolio.Application.Abstraction.Services;
 using Portfolio.Application.Abstraction.Validator;
 using Portfolio.Application.Common.Results;
@@ -13,17 +14,20 @@ public sealed class TechnologyService : ITechnologyService
     private readonly IValidate<int> _validateID;
     private readonly IValidate<TechnologyRequestDto> _validateTechnologyCreateRequest;
     private readonly IValidate<TechnologyUpdateRequestDto> _validateTechnologyUpdateRequest;
+    private readonly IObjectMapper _mapper;
 
     public TechnologyService(
         ITechnologyRepository technologyRepository, 
         IValidate<int> validateID, 
         IValidate<TechnologyRequestDto> validateTechnologyCreateRequest,
-        IValidate<TechnologyUpdateRequestDto> validateTechnologyUpdateRequest)
+        IValidate<TechnologyUpdateRequestDto> validateTechnologyUpdateRequest,
+        IObjectMapper mapper)
     {
         _technologyRepository = technologyRepository;
         _validateID = validateID;
         _validateTechnologyCreateRequest = validateTechnologyCreateRequest;
         _validateTechnologyUpdateRequest = validateTechnologyUpdateRequest;
+        _mapper = mapper;
     }
 
     public async Task<Result<TechnologyResponseDto>> CreateTechnologyAsync(TechnologyRequestDto technologyCreateRequestDto, CancellationToken token)
@@ -39,7 +43,9 @@ public sealed class TechnologyService : ITechnologyService
         var technology = await _technologyRepository.CreateTechnologyAsync(technologyModel, token);
 
         var techDto = new TechnologyResponseDto(technology.Id, technology.Name, technology.Category);
-        return Result<TechnologyResponseDto>.Ok(techDto);
+        return Result<TechnologyResponseDto>.Ok(
+               _mapper.Map<Portfolio.Domain.Entities.Technology, TechnologyResponseDto>(technologyModel)
+               );
     }
 
     public async Task<Result> DeleteTechnologyAsync(int id, CancellationToken token)

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Portfolio.Application.Abstraction.Mapper;
 using Portfolio.Application.Abstraction.Services;
 using Portfolio.Application.Abstraction.Validator;
+using Portfolio.Application.Common.Mapper;
 using Portfolio.Application.Common.Validator;
 using Portfolio.Application.DTO.Request;
 using Portfolio.Application.Services.Auth;
@@ -38,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<IValidate<BlogUpdateRequestDto>, ValidateUpdateBlog>();
         services.AddScoped<IValidate<WebsiteConfigUpdateRequestDto>, ValidateUpdateWebsiteConfig>();
         services.AddScoped<IValidate<LoginRequestDto>, ValidateLoginRequest>();
+        services.AddScoped<IObjectMapper, ObjectMapper>();
 
         return services;
     }
