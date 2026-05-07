@@ -14,6 +14,7 @@ public sealed class TechnologyService : ITechnologyService
     private readonly IValidate<TechnologyRequestDto> _validateTechnologyCreateRequest;
     private readonly IValidate<TechnologyUpdateRequestDto> _validateTechnologyUpdateRequest;
 
+    // APP-01
     public TechnologyService(
         ITechnologyRepository technologyRepository, 
         IValidate<int> validateID, 
