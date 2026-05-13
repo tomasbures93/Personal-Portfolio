@@ -3,32 +3,27 @@ using Portfolio.Domain.Entities;
 using Portfolio.Domain.Enums;
 using Portfolio.Domain.Exceptions;
 
-namespace Portfolio.Tests;
+namespace Portfolio.Tests.UnitTests;
 
 public class GuardUnitTests
 {
-    private readonly string _paramName = "testing";
+    private const string ParamName = "testing";
+    
     [Fact]
     public void Test_AgainstNullOrWhiteSpace_NullInput_ThrowsDomainException()
     {
-        // Arrange 
-        
-        // Act
-        
         // Assert
-        Assert.Throws<DomainException>(() => Guard.AgainstNullOrWhiteSpace(null, _paramName));
+        Assert.Throws<DomainException>(() => Guard.AgainstNullOrWhiteSpace(null, ParamName));
     }
 
     [Fact]
     public void Test_AgainstNullOrWhiteSpace_EmptyInput_ThrowsDomainException()
     {
         // Arrange
-        string input = string.Empty;
-        
-        // Act
+        var input = string.Empty;
         
         // Assert
-        Assert.Throws<DomainException>(() => Guard.AgainstNullOrWhiteSpace(input, _paramName));
+        Assert.Throws<DomainException>(() => Guard.AgainstNullOrWhiteSpace(input, ParamName));
     }
 
     [Fact]
@@ -36,21 +31,19 @@ public class GuardUnitTests
     {
         // Arrange
         string input = "  ";
-
-        // Act
-
+        
         // Assert
-        Assert.Throws<DomainException>(() => Guard.AgainstNullOrWhiteSpace(input, _paramName));
+        Assert.Throws<DomainException>(() => Guard.AgainstNullOrWhiteSpace(input, ParamName));
     }
 
     [Fact]
     public void Test_AgainstNullOrWhiteSpace_ValidInput_DoesNotThrowsDomainException()
     {
         // Arrange
-        string input = "Is it working?";
+        var input = "Is it working?";
 
         // Act
-        var exception = Record.Exception(() => Guard.AgainstNullOrWhiteSpace(input, _paramName));
+        var exception = Record.Exception(() => Guard.AgainstNullOrWhiteSpace(input, ParamName));
 
         // Assert
         Assert.Null(exception);
@@ -62,12 +55,8 @@ public class GuardUnitTests
     [InlineData(int.MinValue)]
     public void Test_ValidId_InvalidIdInput_ThrowsDomainException(int invalidId)
     {
-        // Arrange
-        
-        // Act
-        
         // Assert
-        Assert.Throws<DomainException>(() => Guard.ValidId(invalidId, _paramName));
+        Assert.Throws<DomainException>(() => Guard.ValidId(invalidId, ParamName));
     }
 
     [Theory]
@@ -76,10 +65,8 @@ public class GuardUnitTests
     [InlineData(int.MaxValue)]
     public void Test_ValidId_ValidIdInput_DoesNotThrowsDomainException(int validId)
     {
-        // Arrange
-        
         // Act
-        var exception = Record.Exception(() => Guard.ValidId(validId, _paramName));
+        var exception = Record.Exception(() => Guard.ValidId(validId, ParamName));
         
         // Assert
         Assert.Null(exception);
@@ -88,23 +75,18 @@ public class GuardUnitTests
     [Fact]
     public void Test_EnumValueExists_ThrowsDomainException()
     {
-        // Arrange
-        
-        
-        // Act
-        
         // Assert
-        Assert.Throws<DomainException>(() => Guard.EnumValueExists((TechnologyCategory)999, _paramName));
+        Assert.Throws<DomainException>(() => Guard.EnumValueExists((TechnologyCategory)999, ParamName));
     }
 
     [Fact]
     public void Test_EnumValueExists_DoesNotThrowsDomainException()
     {
         // Arrange
-        var input = (TechnologyCategory)2;
+        var enumeration = (TechnologyCategory)2;
 
         // Act
-        var exception = Record.Exception(() => Guard.EnumValueExists(input, _paramName));
+        var exception = Record.Exception(() => Guard.EnumValueExists(enumeration, ParamName));
         
         // Assert
         Assert.Null(exception);
@@ -115,11 +97,9 @@ public class GuardUnitTests
     {
         // Arrange
         var list = new List<Technology>();
-        
-        // Act
 
         // Assert
-        Assert.Throws<DomainException>(() => Guard.TechnologiesAreNotEmpty(list, _paramName));
+        Assert.Throws<DomainException>(() => Guard.TechnologiesAreNotEmpty(list, ParamName));
     }
 
     [Fact]
@@ -129,7 +109,7 @@ public class GuardUnitTests
         var list = new List<Technology>{ new Technology("Technology 1", TechnologyCategory.Framework) };
         
         // Act
-        var exception = Record.Exception(() => Guard.TechnologiesAreNotEmpty(list, _paramName));
+        var exception = Record.Exception(() => Guard.TechnologiesAreNotEmpty(list, ParamName));
         
         // Assert
         Assert.Null(exception);
