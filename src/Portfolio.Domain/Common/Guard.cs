@@ -25,7 +25,7 @@ public static class Guard
 
     public static void TechnologiesAreNotEmpty(List<Technology> technologies, string paramName)
     {
-        if (technologies.Count == 0)
+        if (technologies.Count == 0 || technologies == null)
             throw new DomainException("Technologies can´t be empty", paramName);
     }
 }
