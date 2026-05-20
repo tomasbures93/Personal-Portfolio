@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Portfolio.Application.Abstraction.Services;
 using Portfolio.Application.Common.Results;
+using Portfolio.Domain.Common;
 using Portfolio.Domain.Entities;
 
 namespace Portfolio.Infrastructure.Services;
@@ -16,6 +17,7 @@ public class AspNetPasswordHasher : IPasswordHasher
 
     public Result<string> HashPassword(string password)
     {
+        Guard.AgainstNullOrWhiteSpace(password, nameof(password));
         return Result<string>.Ok(_passwordHasher.HashPassword(null!, password));
     }
 
